@@ -1,0 +1,49 @@
+{
+  "classes": [
+    {
+      "id": "cs-1-pathway",
+      "name": "CS 1 Pathway",
+      "weeks": {
+        "2025-W34": "1H2tQ3e8sI_9q5cyoi4y_up6zyVMS1fCmgNViOrkUum4",
+        "2025-W35": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS02",
+        "2025-W36": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS03"
+      }
+    },
+    {
+      "id": "cs-2",
+      "name": "CS 2 Mobile Apps",
+      "weeks": {
+        "2025-W34": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS04",
+        "2025-W35": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS05",
+        "2025-W36": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS06"
+      }
+    },
+    {
+      "id": "cs-3",
+      "name": "CS 3 AP CS Principles",
+      "weeks": {
+        "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
+        "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
+        "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09"
+      }
+    },
+    {
+      "id": "cs-4",
+      "name": "CS 4 AP CS A",
+      "weeks": {
+        "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
+        "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
+        "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09"
+      }
+    },
+    {
+      "id": "mythology",
+      "name": "Mythology",
+      "weeks": {
+        "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
+        "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
+        "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09"
+      }
+    }
+  ]
+}

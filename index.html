@@ -295,79 +295,91 @@
   </head>
   <body>
     <header>
-      <div class="wrapper">
-        <div class="header__row">
-          <div class="brand" aria-label="Site">
+      <div class="wrapper" style="padding: 10px 16px">
+        <div class="header__row" style="gap: 12px">
+          <div class="brand" style="min-width: unset">
             <div class="brand__logo" aria-hidden="true"></div>
-            <h1>Weekly Class Agendas</h1>
+            <h1 style="font-size: 17px">Weekly Class Agendas</h1>
             <span id="status-badge" class="tag" title="Configuration status"
               >Loading…</span
             >
           </div>
-          <div
-            class="controls"
-            role="group"
-            aria-label="Class and week controls"
-          >
+          <!-- Control bar (replaces sidebar functionality) -->
+          <div class="layout-bar" role="group" aria-label="Agenda Controls">
             <div class="control">
               <label for="classSelect">Class</label>
               <select id="classSelect" aria-label="Select class"></select>
             </div>
             <div class="control">
               <label for="weekSelect">Week</label>
-              <select id="weekSelect" aria-label="Select week"></select>
+              <select
+                id="weekSelect"
+                aria-label="Select week"
+                disabled
+              ></select>
             </div>
             <div class="control">
               <label class="sr-only" for="prevWeekBtn">Previous week</label>
-              <button id="prevWeekBtn" class="ghost" aria-label="Previous week">
+              <button
+                id="prevWeekBtn"
+                class="btn-inline"
+                type="button"
+                aria-label="Previous week"
+                disabled
+              >
                 ← Prev
               </button>
             </div>
             <div class="control">
               <label class="sr-only" for="nextWeekBtn">Next week</label>
-              <button id="nextWeekBtn" class="ghost" aria-label="Next week">
+              <button
+                id="nextWeekBtn"
+                class="btn-inline"
+                type="button"
+                aria-label="Next week"
+                disabled
+              >
                 Next →
               </button>
             </div>
+            <div class="control">
+              <label>Info</label>
+              <div class="tag small" id="activeWeekLabel">Week: —</div>
+            </div>
+            <div class="control">
+              <label class="sr-only" for="activeWeekRange">Date Range</label>
+              <div class="tag small" id="activeWeekRange">Dates: —</div>
+            </div>
+            <div class="control">
+              <label>Slides</label>
+              <a
+                id="openInNewTab"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                class="btn-inline"
+                style="text-decoration: none"
+                >Open in Tab</a
+              >
+            </div>
           </div>
+          <div class="grow" aria-hidden="true"></div>
+          <button
+            id="copyLinkBtn"
+            class="btn-inline"
+            type="button"
+            title="Copy direct link to this class & week"
+          >
+            Copy Link
+          </button>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="panel" aria-label="Weeks">
-        <div class="panel__header">
-          <h2 class="panel__title">Weeks for selected class</h2>
-          <span class="tag" aria-hidden="true">Auto-selects current week</span>
-        </div>
-        <div class="panel__body">
-          <div id="noWeeksAlert" class="alert warn" style="display: none">
-            No agendas found for this class yet. Add entries to your
-            configuration to enable weeks.
-          </div>
-          <div id="weeksList" class="weeks" role="list"></div>
-        </div>
-      </section>
-
-      <section class="panel" aria-label="Agenda viewer">
-        <div class="viewer-wrap">
-          <div class="viewer-toolbar">
-            <div id="activeWeekLabel" class="tag">Week: —</div>
-            <div id="activeWeekRange" class="tag">Dates: —</div>
-            <div class="spacer"></div>
-            <a
-              id="openInNewTab"
-              href="#"
-              target="_blank"
-              rel="noopener"
-              class="tag"
-              title="Open slides in a new tab"
-              >Open in new tab</a
-            >
-            <button id="copyLinkBtn" class="ghost" title="Copy direct link">
-              Copy link
-            </button>
-          </div>
+      <section class="panel" aria-label="Agenda viewer" style="border: none">
+        <div class="viewer-container">
+          <div id="messageOverlay" role="alert"></div>
           <iframe
             id="slidesFrame"
             class="viewer"
@@ -385,22 +397,24 @@
         <summary>Setup guide</summary>
         <div style="margin-top: 8px; display: grid; gap: 6px">
           <div>
-            1) For each class, publish your Google Slides and copy the
-            presentation ID (the part between <code>/d/</code> and
-            <code>/edit</code>).
+            1) Publish each Google Slides deck and copy its ID (portion between
+            <code>/d/</code> and <code>/edit</code>).
           </div>
           <div>
-            2) Add entries to the configuration with keys as ISO week codes like
-            <code>2025-W36</code> and values as the slide IDs.
+            2) Add it under the correct ISO week key (e.g.
+            <code>2025-W36</code>).
           </div>
           <div>
-            3) This page auto-selects the current ISO week. If no deck exists
-            for this week, it falls back to the most recent previous week.
+            3) Page auto-selects the current ISO week if present, else the most
+            recent prior.
           </div>
           <div>
-            4) Optional: create a file at <code>/data/agendas.json</code> to
-            manage the config outside this HTML. If present, it overrides the
-            inline config below.
+            4) Optionally create <code>/data/agendas.json</code> (same shape as
+            inline config) to update without editing HTML.
+          </div>
+          <div>
+            5) Share direct links using the Copy Link button (hash stores class
+            & week).
           </div>
         </div>
       </details>
@@ -486,74 +500,56 @@
     </script>
 
     <script>
-      // ===== ISO week/year helpers (Monday is first day of week) =====
+      /********** Date + Week Helpers (ISO 8601) **********/
       function pad2(n) {
         return String(n).padStart(2, "0");
       }
-
       function getISOWeekYear(date) {
-        // ISO 8601: week starts Monday; Week 1 is the week with Jan 4th (or the Thursday of the first week)
         const d = new Date(
           Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
         );
-        // Thursday in current week decides the year.
         d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
         const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
         const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
         return { isoYear: d.getUTCFullYear(), isoWeek: weekNo };
       }
-
-      function isoWeekKey(date) {
-        const { isoYear, isoWeek } = getISOWeekYear(date);
+      function isoWeekKey(d) {
+        const { isoYear, isoWeek } = getISOWeekYear(d);
         return `${isoYear}-W${pad2(isoWeek)}`;
       }
-
-      // Monday start and Sunday end for an ISO week key
       function getWeekRange(weekKey) {
         const m = /^(\d{4})-W(\d{2})$/.exec(weekKey);
         if (!m) return null;
-        const isoYear = parseInt(m[1], 10);
-        const isoWeek = parseInt(m[2], 10);
-
-        // Monday of ISO Week 1 is relative to Jan 4
+        const isoYear = +m[1],
+          isoWeek = +m[2];
         const simple = new Date(Date.UTC(isoYear, 0, 4));
-        const dayOfWeek = simple.getUTCDay() || 7; // 1..7
+        const dayOfWeek = simple.getUTCDay() || 7;
         const mondayOfWeek1 = new Date(simple);
         mondayOfWeek1.setUTCDate(simple.getUTCDate() - dayOfWeek + 1);
-
         const monday = new Date(mondayOfWeek1);
         monday.setUTCDate(mondayOfWeek1.getUTCDate() + (isoWeek - 1) * 7);
         const sunday = new Date(monday);
         sunday.setUTCDate(monday.getUTCDate() + 6);
-
         return { start: monday, end: sunday };
       }
-
       function formatDateRange(start, end) {
         const opts = { month: "short", day: "numeric" };
-        const optsEnd = { month: "short", day: "numeric", year: "numeric" };
+        const optsY = { month: "short", day: "numeric", year: "numeric" };
         const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
-        const startStr = start.toLocaleDateString(
-          undefined,
-          sameYear ? opts : optsEnd,
-        );
-        const endStr = end.toLocaleDateString(undefined, optsEnd);
-        return `${startStr} – ${endStr}`;
+        const s = start.toLocaleDateString(undefined, sameYear ? opts : optsY);
+        const e = end.toLocaleDateString(undefined, optsY);
+        return `${s} – ${e}`;
       }
 
-      // ===== Google Slides helpers =====
-      function slideEmbedUrl(slideId) {
-        return `https://docs.google.com/presentation/d/${encodeURIComponent(
-          slideId,
-        )}/embed?rm=minimal&start=false&loop=false&delayms=3000`;
+      /********** Slides URL Helpers **********/
+      function slideEmbedUrl(id) {
+        return `https://docs.google.com/presentation/d/${encodeURIComponent(id)}/embed?rm=minimal&start=false&loop=false&delayms=3000`;
       }
-      function slideOpenUrl(slideId) {
-        return `https://docs.google.com/presentation/d/${encodeURIComponent(
-          slideId,
-        )}/edit?usp=sharing`;
+      function slideOpenUrl(id) {
+        return `https://docs.google.com/presentation/d/${encodeURIComponent(id)}/edit?usp=sharing`;
       }
 
-      // ===== State =====
+      /********** State **********/
       const els = {};
       const state = {
         config: null,
@@ -561,31 +557,41 @@
         weekKey: null,
       };
 
-      function qs(id) {
+      /********** DOM Shortcuts **********/
+      function $(id) {
         return document.getElementById(id);
       }
 
+      /********** Status / Overlay **********/
       function setStatus(text, tone = "info") {
-        const el = qs("status-badge");
+        const el = $("status-badge");
         el.textContent = text;
         el.className = "tag";
         el.style.borderColor =
           tone === "ok" ? "#1b3a26" : tone === "warn" ? "#4a3a10" : "#2a3346";
       }
-
-      function saveToHash() {
-        const params = new URLSearchParams();
-        if (state.classId) params.set("class", state.classId);
-        if (state.weekKey) params.set("week", state.weekKey);
-        const hash = "#" + params.toString();
-        if (location.hash !== hash) history.replaceState(null, "", hash);
+      function showOverlay(msg) {
+        const o = $("messageOverlay");
+        o.textContent = msg;
+        o.style.display = "flex";
+      }
+      function hideOverlay() {
+        const o = $("messageOverlay");
+        o.style.display = "none";
       }
 
-      function loadFromHash() {
+      /********** Persistence (hash + localStorage) **********/
+      function saveToHash() {
+        const p = new URLSearchParams();
+        if (state.classId) p.set("class", state.classId);
+        if (state.weekKey) p.set("week", state.weekKey);
+        const hash = "#" + p.toString();
+        if (location.hash !== hash) history.replaceState(null, "", hash);
+      }
+      function readHash() {
         const p = new URLSearchParams(location.hash.slice(1));
         return { classId: p.get("class"), weekKey: p.get("week") };
       }
-
       function persist() {
         try {
           localStorage.setItem(
@@ -604,27 +610,25 @@
         }
       }
 
+      /********** Config Helpers **********/
       function byId(id) {
         return state.config.classes.find((c) => c.id === id) || null;
       }
-
       function sortedWeeks(weeksMap) {
         return Object.keys(weeksMap || {})
           .filter(Boolean)
           .sort((a, b) => a.localeCompare(b));
       }
-
-      function mostRecentWeekAtOrBefore(weeksAsc, targetWeek) {
-        let candidate = null;
+      function mostRecentWeekAtOrBefore(weeksAsc, target) {
+        let cand = null;
         for (const w of weeksAsc) {
-          if (w.localeCompare(targetWeek) <= 0) candidate = w;
+          if (w.localeCompare(target) <= 0) cand = w;
           else break;
         }
-        return (
-          candidate || (weeksAsc.length ? weeksAsc[weeksAsc.length - 1] : null)
-        );
+        return cand || (weeksAsc.length ? weeksAsc[weeksAsc.length - 1] : null);
       }
 
+      /********** UI Population **********/
       function populateClassSelect() {
         const sel = els.classSelect;
         sel.innerHTML = "";
@@ -635,156 +639,110 @@
           sel.appendChild(opt);
         }
       }
-
-      function populateWeekSelect(classObj, selectedWeek) {
+      function populateWeekSelect(cls, selected) {
         const sel = els.weekSelect;
         sel.innerHTML = "";
-        const weeks = sortedWeeks(classObj.weeks);
+        const weeks = sortedWeeks(cls.weeks);
         if (weeks.length === 0) {
           sel.disabled = true;
-          const opt = document.createElement("option");
-          opt.value = "";
-          opt.textContent = "No weeks";
-          sel.appendChild(opt);
+          const o = document.createElement("option");
+          o.value = "";
+          o.textContent = "No weeks";
+          sel.appendChild(o);
           return;
         }
         sel.disabled = false;
         for (const wk of weeks) {
           const range = getWeekRange(wk);
-          const opt = document.createElement("option");
-          opt.value = wk;
-          opt.textContent = range
+          const o = document.createElement("option");
+          o.value = wk;
+          o.textContent = range
             ? `${wk} (${formatDateRange(range.start, range.end)})`
             : wk;
-          if (wk === selectedWeek) opt.selected = true;
-          sel.appendChild(opt);
+          if (wk === selected) o.selected = true;
+          sel.appendChild(o);
         }
       }
 
-      function renderWeeksList(classObj, selectedWeek) {
-        const container = els.weeksList;
-        container.innerHTML = "";
-        const weeks = sortedWeeks(classObj.weeks);
-        qs("noWeeksAlert").style.display = weeks.length ? "none" : "block";
-
-        const current = isoWeekKey(new Date());
-        for (const wk of weeks.slice().reverse()) {
-          const range = getWeekRange(wk);
-          const div = document.createElement("div");
-          div.className = "week-item" + (wk === selectedWeek ? " active" : "");
-          div.setAttribute("role", "listitem");
-          div.tabIndex = 0;
-          div.dataset.week = wk;
-
-          const left = document.createElement("div");
-          const title = document.createElement("div");
-          title.className = "title";
-          title.textContent = wk;
-          const meta = document.createElement("div");
-          meta.className = "meta";
-          meta.textContent = range
-            ? `Week of ${range.start.toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}`
-            : "";
-
-          left.appendChild(title);
-          left.appendChild(meta);
-
-          const right = document.createElement("div");
-          const badge = document.createElement("span");
-          badge.className = "badge";
-          badge.textContent = wk === current ? "Current" : "Archive";
-          right.appendChild(badge);
-
-          div.appendChild(left);
-          div.appendChild(right);
-
-          div.addEventListener("click", () => selectWeek(wk));
-          div.addEventListener("keypress", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              selectWeek(wk);
-            }
-          });
-
-          container.appendChild(div);
-        }
-      }
-
-      function updateActiveWeekUI(classObj, weekKey) {
-        const range = getWeekRange(weekKey);
-        els.activeWeekLabel.textContent = `Week: ${weekKey}`;
-        els.activeWeekRange.textContent = range
-          ? `Dates: ${formatDateRange(range.start, range.end)}`
-          : "Dates: —";
-
-        // Update weeks list highlight
-        Array.from(els.weeksList.children).forEach((el) => {
-          el.classList.toggle("active", el.dataset.week === weekKey);
-        });
-
-        // Update prev/next button disabled state
-        const weeks = sortedWeeks(classObj.weeks);
-        const idx = weeks.indexOf(weekKey);
+      function updateNavButtons(cls) {
+        const weeks = sortedWeeks(cls.weeks);
+        const idx = weeks.indexOf(state.weekKey);
         els.prevWeekBtn.disabled = idx <= 0;
         els.nextWeekBtn.disabled = idx === -1 || idx >= weeks.length - 1;
       }
 
+      /********** Selection Logic **********/
       function selectClass(classId, opts = { preferHashWeek: true }) {
         state.classId = classId;
         const cls = byId(classId);
-        if (!cls) return;
-
+        if (!cls) {
+          showOverlay("Class not found.");
+          return;
+        }
+        hideOverlay();
         const weeksAsc = sortedWeeks(cls.weeks);
-        const currentWeek = isoWeekKey(new Date());
-        let desiredWeek = null;
+        const currentW = isoWeekKey(new Date());
+        let desired = null;
 
-        const { weekKey: hashWeek } = loadFromHash();
-        const { weekKey: persistedWeek } = loadPersisted();
+        const { weekKey: hashW } = readHash();
+        const { weekKey: storedW } = loadPersisted();
 
-        if (opts.preferHashWeek && hashWeek && cls.weeks[hashWeek]) {
-          desiredWeek = hashWeek;
-        } else if (persistedWeek && cls.weeks[persistedWeek]) {
-          desiredWeek = persistedWeek;
-        } else if (cls.weeks[currentWeek]) {
-          desiredWeek = currentWeek;
+        if (opts.preferHashWeek && hashW && cls.weeks[hashW]) {
+          desired = hashW;
+        } else if (storedW && cls.weeks[storedW]) {
+          desired = storedW;
+        } else if (cls.weeks[currentW]) {
+          desired = currentW;
         } else {
-          desiredWeek = mostRecentWeekAtOrBefore(weeksAsc, currentWeek);
+          desired = mostRecentWeekAtOrBefore(weeksAsc, currentW);
         }
 
-        populateWeekSelect(cls, desiredWeek);
-        renderWeeksList(cls, desiredWeek);
-        selectWeek(desiredWeek || weeksAsc[weeksAsc.length - 1] || null, {
-          updateSelectors: false,
+        populateWeekSelect(cls, desired);
+        selectWeek(desired || weeksAsc[weeksAsc.length - 1] || null, {
+          updateWeekSelect: false,
         });
         els.classSelect.value = classId;
       }
 
-      function selectWeek(weekKey, opts = { updateSelectors: true }) {
-        if (!weekKey) return;
+      function selectWeek(weekKey, { updateWeekSelect = true } = {}) {
+        if (!weekKey) {
+          showOverlay("No weeks configured for this class yet.");
+          state.weekKey = null;
+          els.slidesFrame.removeAttribute("src");
+          els.activeWeekLabel.textContent = "Week: —";
+          els.activeWeekRange.textContent = "Dates: —";
+          els.openInNewTab.removeAttribute("href");
+          els.weekSelect.disabled = true;
+          updateNavButtons({ weeks: {} });
+          return;
+        }
         const cls = byId(state.classId);
         if (!cls) return;
         const slideId = cls.weeks[weekKey];
         if (!slideId) {
           console.warn("No slide for week", weekKey);
+          showOverlay("Slides not available for selected week.");
           return;
         }
+        hideOverlay();
         state.weekKey = weekKey;
 
-        // Update viewer
+        // Update frame
         els.slidesFrame.src = slideEmbedUrl(slideId);
         els.openInNewTab.href = slideOpenUrl(slideId);
-        updateActiveWeekUI(cls, weekKey);
 
-        // Update selects and list
-        if (opts.updateSelectors) {
+        // Labels
+        els.activeWeekLabel.textContent = `Week: ${weekKey}`;
+        const range = getWeekRange(weekKey);
+        els.activeWeekRange.textContent = range
+          ? `Dates: ${formatDateRange(range.start, range.end)}`
+          : "Dates: —";
+
+        if (updateWeekSelect) {
           els.weekSelect.value = weekKey;
-          renderWeeksList(cls, weekKey);
         }
 
+        updateNavButtons(cls);
         saveToHash();
         persist();
       }
@@ -795,17 +753,31 @@
         const list = sortedWeeks(cls.weeks);
         const idx = list.indexOf(state.weekKey);
         if (idx === -1) return;
-        const nextIdx = idx + delta;
-        if (nextIdx < 0 || nextIdx >= list.length) return;
-        selectWeek(list[nextIdx]);
+        const next = list[idx + delta];
+        if (next) selectWeek(next);
       }
 
+      /********** Copy Link **********/
+      function copyLink() {
+        const url = new URL(location.href);
+        const p = new URLSearchParams();
+        if (state.classId) p.set("class", state.classId);
+        if (state.weekKey) p.set("week", state.weekKey);
+        url.hash = p.toString();
+        const text = url.toString();
+        navigator.clipboard?.writeText(text).then(() => {
+          const old = els.copyLinkBtn.textContent;
+          els.copyLinkBtn.textContent = "Copied!";
+          setTimeout(() => (els.copyLinkBtn.textContent = old), 1200);
+        });
+      }
+
+      /********** Load Config (external override) **********/
       async function loadConfig() {
-        // Try external (if served), otherwise fallback to inline
         try {
-          const res = await fetch("data/agendas.json", { cache: "no-store" });
-          if (res.ok) {
-            const json = await res.json();
+          const resp = await fetch("data/agendas.json", { cache: "no-store" });
+          if (resp.ok) {
+            const json = await resp.json();
             if (json && Array.isArray(json.classes)) {
               setStatus("External config", "ok");
               return json;
@@ -819,42 +791,27 @@
         }
       }
 
-      function chooseInitialClass() {
-        const { classId: fromHash } = loadFromHash();
-        const { classId: fromPersist } = loadPersisted();
-        const ids = new Set(state.config.classes.map((c) => c.id));
-        if (fromHash && ids.has(fromHash)) return fromHash;
-        if (fromPersist && ids.has(fromPersist)) return fromPersist;
-        return state.config.classes[0]?.id || null;
-      }
-
-      function copyLink() {
-        const url = new URL(location.href);
-        const params = new URLSearchParams();
-        params.set("class", state.classId);
-        params.set("week", state.weekKey);
-        url.hash = params.toString();
-        const text = url.toString();
-        if (navigator.clipboard?.writeText) {
-          navigator.clipboard.writeText(text).then(() => {
-            const old = els.copyLinkBtn.textContent;
-            els.copyLinkBtn.textContent = "Copied!";
-            setTimeout(() => (els.copyLinkBtn.textContent = old), 1200);
-          });
-        }
-      }
-
+      /********** Initialization **********/
       function initDomRefs() {
-        els.classSelect = qs("classSelect");
-        els.weekSelect = qs("weekSelect");
-        els.weeksList = qs("weeksList");
-        els.slidesFrame = qs("slidesFrame");
-        els.activeWeekLabel = qs("activeWeekLabel");
-        els.activeWeekRange = qs("activeWeekRange");
-        els.openInNewTab = qs("openInNewTab");
-        els.prevWeekBtn = qs("prevWeekBtn");
-        els.nextWeekBtn = qs("nextWeekBtn");
-        els.copyLinkBtn = qs("copyLinkBtn");
+        els.classSelect = $("classSelect");
+        els.weekSelect = $("weekSelect");
+        els.prevWeekBtn = $("prevWeekBtn");
+        els.nextWeekBtn = $("nextWeekBtn");
+        els.slidesFrame = $("slidesFrame");
+        els.activeWeekLabel = $("activeWeekLabel");
+        els.activeWeekRange = $("activeWeekRange");
+        els.openInNewTab = $("openInNewTab");
+        els.copyLinkBtn = $("copyLinkBtn");
+        els.messageOverlay = $("messageOverlay");
+      }
+
+      function chooseInitialClass() {
+        const { classId: hashClass } = readHash();
+        const { classId: storedClass } = loadPersisted();
+        const ids = new Set(state.config.classes.map((c) => c.id));
+        if (hashClass && ids.has(hashClass)) return hashClass;
+        if (storedClass && ids.has(storedClass)) return storedClass;
+        return state.config.classes[0]?.id || null;
       }
 
       async function boot() {
@@ -867,28 +824,23 @@
           !Array.isArray(state.config.classes) ||
           state.config.classes.length === 0
         ) {
-          setStatus("Add classes to config", "warn");
-          const main = document.querySelector("main");
-          if (main) {
-            const alert = document.createElement("div");
-            alert.className = "alert error";
-            alert.style.margin = "16px";
-            alert.textContent =
-              "No classes configured. Edit window.AGENDAS_CONFIG or provide /data/agendas.json.";
-            main.prepend(alert);
-          }
+          setStatus("Add classes", "warn");
+          showOverlay(
+            "No classes configured. Edit window.AGENDAS_CONFIG or provide /data/agendas.json.",
+          );
           return;
         }
 
         populateClassSelect();
         const initialClass = chooseInitialClass();
         if (!initialClass) {
-          setStatus("Add classes to config", "warn");
+          setStatus("Add classes", "warn");
+          showOverlay("No classes configured.");
           return;
         }
         selectClass(initialClass);
 
-        // Wire events
+        // Events
         els.classSelect.addEventListener("change", () =>
           selectClass(els.classSelect.value, { preferHashWeek: false }),
         );
@@ -898,8 +850,9 @@
         els.prevWeekBtn.addEventListener("click", () => stepWeek(-1));
         els.nextWeekBtn.addEventListener("click", () => stepWeek(1));
         els.copyLinkBtn.addEventListener("click", copyLink);
+
         window.addEventListener("hashchange", () => {
-          const { classId, weekKey } = loadFromHash();
+          const { classId, weekKey } = readHash();
           if (classId && classId !== state.classId && byId(classId)) {
             selectClass(classId, { preferHashWeek: true });
             return;
@@ -916,7 +869,6 @@
         setStatus("Ready", "ok");
       }
 
-      // Start
       boot();
     </script>
   </body>

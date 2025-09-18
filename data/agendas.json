@@ -4,18 +4,18 @@
       "id": "cs-1-pathway",
       "name": "CS 1 Pathway",
       "weeks": {
-        "2025-W34": "1H2tQ3e8sI_9q5cyoi4y_up6zyVMS1fCmgNViOrkUum4",
-        "2025-W35": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS02",
-        "2025-W36": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS03"
+        "2025-W35": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS03",
+        "2025-W36": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS02",
+        "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA"
       }
     },
     {
       "id": "cs-2",
       "name": "CS 2 Mobile Apps",
       "weeks": {
-        "2025-W34": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS04",
-        "2025-W35": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS05",
-        "2025-W36": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS06"
+        "2025-W35": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS04",
+        "2025-W36": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS05",
+        "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA"
       }
     },
     {
@@ -24,7 +24,7 @@
       "weeks": {
         "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
         "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-        "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09"
+        "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA"
       }
     },
     {
@@ -33,7 +33,7 @@
       "weeks": {
         "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
         "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-        "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09"
+        "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA"
       }
     },
     {
@@ -42,7 +42,7 @@
       "weeks": {
         "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
         "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-        "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09"
+        "2025-W37": "1iOhYdAJ1h3bF5vDMTWN28G7R7zqd1o8tTCl11yIptkQ"
       }
     }
   ]

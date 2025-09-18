@@ -5,293 +5,8 @@
     <title>Weekly Class Agendas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <style>
-      :root {
-        --bg: #0b0c0f;
-        --panel: #12141a;
-        --muted: #8a93a6;
-        --text: #e8ecf1;
-        --accent: #4f8cff;
-        --accent-2: #7c4dff;
-        --border: #222633;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        height: 100%;
-      }
-      body {
-        margin: 0;
-        font-family:
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          Segoe UI,
-          Roboto,
-          "Helvetica Neue",
-          Arial,
-          "Apple Color Emoji",
-          "Segoe UI Emoji";
-        background: var(--bg);
-        color: var(--text);
-      }
-
-      header {
-        border-bottom: 1px solid var(--border);
-        background: linear-gradient(180deg, #10131a 0%, #0b0c0f 100%);
-      }
-      .wrapper {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 16px;
-      }
-      .header__row {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 250px;
-      }
-      .brand__logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        background: conic-gradient(
-          from 180deg,
-          var(--accent),
-          var(--accent-2),
-          var(--accent)
-        );
-        box-shadow:
-          0 0 0 2px #ffffff0a inset,
-          0 8px 24px #00000066;
-      }
-      h1 {
-        font-size: 18px;
-        margin: 0;
-        letter-spacing: 0.2px;
-      }
-      .tag {
-        font-size: 12px;
-        color: var(--muted);
-        padding: 4px 8px;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        white-space: nowrap;
-      }
-
-      .controls {
-        display: flex;
-        align-items: end;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .control {
-        display: grid;
-        gap: 6px;
-      }
-      label {
-        color: var(--muted);
-        font-size: 12px;
-      }
-      select,
-      button {
-        background: #0f1219;
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 10px 12px;
-        font-size: 14px;
-        outline: none;
-        transition:
-          border-color 0.2s ease,
-          background 0.2s ease;
-      }
-      select:hover,
-      button:hover {
-        border-color: #2d3344;
-      }
-      button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-      }
-      button.ghost {
-        background: transparent;
-      }
-      .sr-only {
-        position: absolute !important;
-        height: 1px;
-        width: 1px;
-        overflow: hidden;
-        clip: rect(1px, 1px, 1px, 1px);
-        white-space: nowrap;
-      }
-
-      main {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 16px;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 16px;
-      }
-      @media (max-width: 900px) {
-        main {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .panel {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        overflow: clip;
-      }
-      .panel__header {
-        padding: 12px 14px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        justify-content: space-between;
-      }
-      .panel__title {
-        font-size: 14px;
-        color: var(--muted);
-        margin: 0;
-      }
-      .panel__body {
-        padding: 12px;
-      }
-
-      .weeks {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        max-height: 65vh;
-        overflow: auto;
-        padding-right: 2px;
-      }
-      .week-item {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 8px;
-        align-items: center;
-        padding: 10px 12px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        cursor: pointer;
-        background: #0e1118;
-        transition:
-          border-color 0.2s ease,
-          background 0.2s ease;
-      }
-      .week-item:hover {
-        border-color: #2b3142;
-      }
-      .week-item.active {
-        border-color: #3b4bff66;
-        background: linear-gradient(180deg, #121726, #0e111e);
-        box-shadow: 0 0 0 1px #3b4bff26 inset;
-      }
-      .week-item .title {
-        font-size: 14px;
-      }
-      .week-item .meta {
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .week-item .badge {
-        font-size: 11px;
-        color: #cfe0ff;
-        background: #19305a;
-        border: 1px solid #2b4fa1;
-        padding: 2px 6px;
-        border-radius: 6px;
-        white-space: nowrap;
-      }
-
-      .viewer {
-        aspect-ratio: 16 / 9;
-        width: 100%;
-        border: none;
-        background: #0e1118;
-      }
-      .viewer-wrap {
-        display: grid;
-        grid-template-rows: auto 1fr;
-        height: 100%;
-      }
-      .viewer-toolbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px;
-        border-bottom: 1px solid var(--border);
-        background: linear-gradient(180deg, #0e121a, #0b0e15);
-      }
-      .spacer {
-        flex: 1;
-      }
-
-      .alert {
-        padding: 10px 12px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: #0f1218;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .alert.warn {
-        border-color: #4a3a10;
-        background: #191307;
-        color: #f0cc83;
-      }
-      .alert.error {
-        border-color: #4a1b1b;
-        background: #1b0e0e;
-        color: #ffb3b3;
-      }
-      .alert.info {
-        border-color: #2a3346;
-      }
-
-      a {
-        color: #9db7ff;
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-
-      footer {
-        max-width: 1200px;
-        margin: 0 auto 24px;
-        padding: 0 16px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      code {
-        background: #0e1118;
-        border: 1px solid var(--border);
-        padding: 2px 6px;
-        border-radius: 6px;
-        font-family:
-          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", "Courier New", monospace;
-        font-size: 12px;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Inline style block removed (migrated to style.css) -->
   </head>
   <body>
     <header>
@@ -420,52 +135,26 @@
       </details>
     </footer>
 
-    <!--
-      Configuration
-
-      You can manage agendas in two ways:
-      A) Inline config (edit window.AGENDAS_CONFIG below)
-      B) External JSON at /data/agendas.json with the same shape
-
-      Shape:
-      {
-        "classes": [
-          {
-            "id": "algebra-1",
-            "name": "Algebra 1",
-            "weeks": {
-              "2025-W35": "GOOGLE_SLIDES_ID",
-              "2025-W36": "GOOGLE_SLIDES_ID"
-            }
-          }
-        ]
-      }
-
-      Notes:
-      - Weeks use ISO format "YYYY-Www" (Monday-based). Use an ISO-week calendar to plan weeks.
-      - To "automatically update each week", keep adding the new week's Slides ID. This page always targets the current ISO week.
-    -->
+    <!-- Inline configuration fallback -->
     <script>
-      // Default inline configuration. Replace with your real classes and weeks.
-      // If /data/agendas.json exists, it will override this object at runtime.
       window.AGENDAS_CONFIG = {
         classes: [
           {
             id: "cs-1-pathway",
             name: "CS 1 Pathway",
             weeks: {
-              "2025-W34": "1H2tQ3e8sI_9q5cyoi4y_up6zyVMS1fCmgNViOrkUum4",
-              "2025-W35": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS02",
-              "2025-W36": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS03",
+              "2025-W35": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS03",
+              "2025-W36": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS02",
+              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
             },
           },
           {
             id: "cs-2",
             name: "CS 2 Mobile Apps",
             weeks: {
-              "2025-W34": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS04",
-              "2025-W35": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS05",
-              "2025-W36": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS06",
+              "2025-W35": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS04",
+              "2025-W36": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS05",
+              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
             },
           },
           {
@@ -474,7 +163,7 @@
             weeks: {
               "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
               "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-              "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09",
+              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
             },
           },
           {
@@ -483,7 +172,7 @@
             weeks: {
               "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
               "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-              "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09",
+              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
             },
           },
           {
@@ -492,7 +181,7 @@
             weeks: {
               "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
               "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-              "2025-W37": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS09",
+              "2025-W37": "1iOhYdAJ1h3bF5vDMTWN28G7R7zqd1o8tTCl11yIptkQ",
             },
           },
         ],

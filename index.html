@@ -104,6 +104,16 @@
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
+        <div id="weeksListPanel" class="weeks-panel" aria-label="Weeks index">
+          <div class="weeks-panel__header">
+            <strong class="weeks-panel__title">Weeks</strong>
+            <span class="weeks-panel__legend">
+              <span class="legend-chip current">Current week</span>
+              <span class="legend-chip active">Selected</span>
+            </span>
+          </div>
+            <div id="weekList" class="week-list" role="list"></div>
+        </div>
       </section>
     </main>
 
@@ -373,6 +383,33 @@
         els.nextWeekBtn.disabled = idx === -1 || idx >= weeks.length - 1;
       }
 
+      function renderWeekList(cls) {
+        const container = document.getElementById("weekList");
+        if (!container || !cls) return;
+        const weeks = sortedWeeks(cls.weeks);
+        const current = isoWeekKey(new Date());
+        container.innerHTML = "";
+        for (const wk of weeks) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          let cn = "week-link";
+          if (wk === current) cn += " current";
+          if (wk === state.weekKey) cn += " active";
+          btn.className = cn;
+          btn.textContent = wk;
+          btn.setAttribute("role", "listitem");
+          btn.addEventListener("click", () => selectWeek(wk));
+          container.appendChild(btn);
+        }
+        if (weeks.length === 0) {
+          const span = document.createElement("div");
+          span.style.fontSize = "12px";
+          span.style.color = "var(--muted)";
+          span.textContent = "No weeks yet.";
+          container.appendChild(span);
+        }
+      }
+
       /********** Selection Logic **********/
       function selectClass(classId, opts = { preferHashWeek: true }) {
         state.classId = classId;
@@ -404,6 +441,7 @@
           updateWeekSelect: false,
         });
         els.classSelect.value = classId;
+        renderWeekList(cls);
       }
 
       function selectWeek(weekKey, { updateWeekSelect = true } = {}) {
@@ -445,6 +483,7 @@
         }
 
         updateNavButtons(cls);
+        renderWeekList(cls);
         saveToHash();
         persist();
       }
@@ -505,6 +544,7 @@
         els.openInNewTab = $("openInNewTab");
         els.copyLinkBtn = $("copyLinkBtn");
         els.messageOverlay = $("messageOverlay");
+        els.weekList = $("weekList");
       }
 
       function chooseInitialClass() {

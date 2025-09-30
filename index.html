@@ -163,6 +163,36 @@
         box-shadow: 0 0 0 1px #2b4fa1 inset;
       }
 
+      /* Icon structure (text hidden on small screens) */
+      .btn-inline .icon,
+      .btn-inline .icon-right {
+        font-size: 14px;
+        line-height: 1;
+      }
+      .btn-inline .icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1em;
+      }
+
+      @media (max-width: 560px) {
+        .btn-inline .btn-text {
+          display: none;
+        }
+        #prevWeekBtn,
+        #nextWeekBtn,
+        #toggleFullBtn,
+        #moreToggleBtn {
+          padding: 6px 8px;
+          min-width: 42px;
+          justify-content: center;
+        }
+        #moreToggleBtn .icon-right {
+          margin-left: 2px;
+        }
+      }
+
       /* Right alignment cluster for wide screens */
       .layout-bar {
         width: 100%;
@@ -216,7 +246,8 @@
                   aria-label="Previous week"
                   disabled
                 >
-                  ← Prev
+                  <span class="icon" aria-hidden="true">←</span>
+                  <span class="btn-text">Prev</span>
                 </button>
               </div>
               <div>
@@ -228,7 +259,8 @@
                   aria-label="Next week"
                   disabled
                 >
-                  Next →
+                  <span class="icon" aria-hidden="true">→</span>
+                  <span class="btn-text">Next</span>
                 </button>
               </div>
             </div>
@@ -244,7 +276,8 @@
                 aria-pressed="false"
                 aria-label="Toggle fullscreen view of slides"
               >
-                Fullscreen
+                <span class="icon" aria-hidden="true">⛶</span>
+                <span class="btn-text">Fullscreen</span>
               </button>
             </div>
 
@@ -257,7 +290,9 @@
                 aria-expanded="false"
                 aria-controls="morePanel"
               >
-                Options ▾
+                <span class="icon" aria-hidden="true">≡</span>
+                <span class="btn-text">Options</span>
+                <span class="icon-right" aria-hidden="true">▾</span>
               </button>
               <div
                 id="morePanel"
@@ -828,7 +863,9 @@
         els.toggleFullBtn?.addEventListener("click", () => {
           const on = document.body.classList.toggle("slides-full");
           els.toggleFullBtn.setAttribute("aria-pressed", on ? "true" : "false");
-          els.toggleFullBtn.textContent = on ? "Exit Fullscreen" : "Fullscreen";
+          const fsLabel = els.toggleFullBtn.querySelector(".btn-text");
+          if (fsLabel)
+            fsLabel.textContent = on ? "Exit Fullscreen" : "Fullscreen";
           if (els.exitFullscreenBtn) {
             els.exitFullscreenBtn.style.display = on ? "inline-flex" : "none";
           }
@@ -838,7 +875,8 @@
             document.body.classList.remove("slides-full");
             if (els.toggleFullBtn) {
               els.toggleFullBtn.setAttribute("aria-pressed", "false");
-              els.toggleFullBtn.textContent = "Fullscreen";
+              const fsLabel = els.toggleFullBtn.querySelector(".btn-text");
+              if (fsLabel) fsLabel.textContent = "Fullscreen";
             }
             if (els.exitFullscreenBtn)
               els.exitFullscreenBtn.style.display = "none";
@@ -852,7 +890,8 @@
             "aria-expanded",
             expanded ? "false" : "true",
           );
-          els.moreToggleBtn.innerHTML = expanded ? "Options ▾" : "Options ▴";
+          const arrow = els.moreToggleBtn.querySelector(".icon-right");
+          if (arrow) arrow.textContent = expanded ? "▾" : "▴";
           els.morePanel.classList.toggle("hidden", expanded);
         });
 

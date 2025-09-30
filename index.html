@@ -12,13 +12,6 @@
     <header>
       <div class="wrapper" style="padding: 10px 16px">
         <div class="header__row" style="gap: 12px">
-          <div class="brand" style="min-width: unset">
-            <div class="brand__logo" aria-hidden="true"></div>
-            <h1 style="font-size: 17px">Weekly Class Agendas</h1>
-            <span id="status-badge" class="tag" title="Configuration status"
-              >Loading…</span
-            >
-          </div>
           <!-- Control bar (replaces sidebar functionality) -->
           <div class="layout-bar" role="group" aria-label="Agenda Controls">
             <div class="control">
@@ -77,16 +70,27 @@
                 >Open in Tab</a
               >
             </div>
+            <div class="control">
+              <label class="sr-only" for="status-badge">Status</label>
+              <span
+                id="status-badge"
+                class="tag small"
+                title="Configuration status"
+                >Loading…</span
+              >
+            </div>
+            <div class="control">
+              <label class="sr-only" for="copyLinkBtn">Copy link</label>
+              <button
+                id="copyLinkBtn"
+                class="btn-inline"
+                type="button"
+                title="Copy direct link to this class & week"
+              >
+                Copy Link
+              </button>
+            </div>
           </div>
-          <div class="grow" aria-hidden="true"></div>
-          <button
-            id="copyLinkBtn"
-            class="btn-inline"
-            type="button"
-            title="Copy direct link to this class & week"
-          >
-            Copy Link
-          </button>
         </div>
       </div>
     </header>
@@ -267,8 +271,9 @@
       /********** Status / Overlay **********/
       function setStatus(text, tone = "info") {
         const el = $("status-badge");
+        if (!el) return;
         el.textContent = text;
-        el.className = "tag";
+        el.className = "tag small";
         el.style.borderColor =
           tone === "ok" ? "#1b3a26" : tone === "warn" ? "#4a3a10" : "#2a3346";
       }

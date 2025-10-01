@@ -1,4 +1,6 @@
 {
+  "academicStartWeek": "2025-W32",
+  "skipWeeks": ["2025-W42", "2025-W52", "2026-W01"],
   "classes": [
     {
       "id": "cs-1-pathway",

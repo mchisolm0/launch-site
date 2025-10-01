@@ -144,9 +144,6 @@ main {
   min-height: 0;
 }
 @media (max-width: 900px) {
-  main {
-    /* Full width layout already applied */
-  }
 }
 
 .panel {
@@ -425,7 +422,9 @@ code {
   font-size: 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 .week-link:hover {
   border-color: #2d3344;

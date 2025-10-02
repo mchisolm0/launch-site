@@ -458,7 +458,7 @@
       const academicMeta = {
         initialized: false,
         startWeekKey: null,
-        startMonday: null,
+        startMonday: new Date(Date.UTC(2025, 7, 4)),
         skipSet: new Set(),
         skipMondays: [],
       };
@@ -514,7 +514,7 @@
         if (wkMon < academicMeta.startMonday) return null;
         // Compute raw week offset
         const diffWeeks = Math.round(
-          (wkMon - academicMeta.startMonday) / (7 * 24 * 60 * 60 * 1000),
+          (wkMon - academicMeta.startMonday) / (7 * 24 * 60 * 60 * 1000) + 1,
         );
         // Count skip weeks up to (and including if itself a skip) this Monday
         let skipsUpTo = 0;

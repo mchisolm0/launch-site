@@ -410,61 +410,7 @@
       </details>
     </footer>
 
-    <!-- Inline configuration fallback -->
-    <script>
-      window.AGENDAS_CONFIG = {
-        classes: [
-          {
-            id: "cs-1-pathway",
-            name: "CS 1 Pathway",
-            weeks: {
-              "2025-W35": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS03",
-              "2025-W36": "1AbCdEFgHiJKLmNoPqRstuVWxyzAGENDAS02",
-              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
-            },
-          },
-          {
-            id: "cs-2",
-            name: "CS 2 Mobile Apps",
-            weeks: {
-              "2025-W35": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS04",
-              "2025-W36": "2QwErTyUiOpAsDfGhJkLzXcVbNmAGENDAS05",
-              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
-            },
-          },
-          {
-            id: "cs-3",
-            name: "CS 3 AP CS Principles",
-            weeks: {
-              "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
-              "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-              "2025-W37": "1rOlmD7vYK5tmYSFNY6bItWmbAoyX1a2HtfSeDaJddwA",
-            },
-          },
-          {
-            id: "cs-4",
-            name: "CS 4 AP CS A",
-            weeks: {
-              "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
-              "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-              "2025-W37":
-                "2PACX-1vRocHqnJfmaQD3m6qjh62X54Il-M9ObcVkaPVXlf2XjDQOn2VSGig6hwjWoDxtjsR1KZ8bFP_cKIsyu",
-              "2025-W38":
-                "2PACX-1vQ2sOTNQvPauB-VL_N8gS72dkyJjoByaXsF4D3rwbZGdVOIxdwlq10HyoOf54itsXwprvhAoVCtCc8E",
-            },
-          },
-          {
-            id: "mythology",
-            name: "Mythology",
-            weeks: {
-              "2025-W35": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS07",
-              "2025-W36": "3ZxCvBnMmNbVcXzLaKsJdHfGgFdSaAGENDAS08",
-              "2025-W37": "1iOhYdAJ1h3bF5vDMTWN28G7R7zqd1o8tTCl11yIptkQ",
-            },
-          },
-        ],
-      };
-    </script>
+    <!-- Inline configuration removed: site now relies solely on data/agendas.json -->
 
     <script>
       /********** Date + Week Helpers (ISO 8601) **********/
@@ -506,6 +452,95 @@
         const s = start.toLocaleDateString(undefined, sameYear ? opts : optsY);
         const e = end.toLocaleDateString(undefined, optsY);
         return `${s} – ${e}`;
+      }
+
+      /********** Academic Week & Skip Logic **********/
+      const academicMeta = {
+        initialized: false,
+        startWeekKey: null,
+        startMonday: null,
+        skipSet: new Set(),
+        skipMondays: [],
+      };
+
+      function parseWeekKey(weekKey) {
+        const m = /^(\d{4})-W(\d{2})$/.exec(weekKey);
+        if (!m) return null;
+        return { isoYear: +m[1], isoWeek: +m[2] };
+      }
+
+      function deriveEarliestWeek() {
+        if (!state.config) return null;
+        const all = new Set();
+        for (const c of state.config.classes) {
+          for (const wk of Object.keys(c.weeks || {})) all.add(wk);
+        }
+        for (const sw of state.config.skipWeeks || []) all.add(sw);
+        const sorted = [...all]
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b));
+        return sorted[0] || null;
+      }
+
+      function initAcademicMeta() {
+        if (academicMeta.initialized || !state.config) return;
+        const cfg = state.config;
+        academicMeta.startWeekKey =
+          cfg.academicStartWeek || deriveEarliestWeek();
+        const startRange = academicMeta.startWeekKey
+          ? getWeekRange(academicMeta.startWeekKey)
+          : null;
+        academicMeta.startMonday = startRange ? startRange.start : null;
+        academicMeta.skipSet = new Set(cfg.skipWeeks || []);
+        academicMeta.skipMondays = (cfg.skipWeeks || [])
+          .map((wk) => getWeekRange(wk))
+          .filter((r) => r && r.start)
+          .map((r) => r.start)
+          .sort((a, b) => a - b);
+        academicMeta.initialized = true;
+      }
+
+      function isSkipWeek(weekKey) {
+        initAcademicMeta();
+        return academicMeta.skipSet.has(weekKey);
+      }
+
+      function academicWeekNumber(weekKey) {
+        initAcademicMeta();
+        if (!academicMeta.startMonday) return null;
+        const range = getWeekRange(weekKey);
+        if (!range) return null;
+        const wkMon = range.start;
+        if (wkMon < academicMeta.startMonday) return null;
+        // Compute raw week offset
+        const diffWeeks = Math.round(
+          (wkMon - academicMeta.startMonday) / (7 * 24 * 60 * 60 * 1000),
+        );
+        // Count skip weeks up to (and including if itself a skip) this Monday
+        let skipsUpTo = 0;
+        for (const sm of academicMeta.skipMondays) {
+          if (sm <= wkMon && sm >= academicMeta.startMonday) skipsUpTo++;
+          if (sm > wkMon) break;
+        }
+        if (isSkipWeek(weekKey)) return null; // skip weeks do not consume a number
+        return diffWeeks + 1 - skipsUpTo;
+      }
+
+      function displayWeekLabel(weekKey) {
+        const range = getWeekRange(weekKey);
+        const dr = range ? ` (${formatDateRange(range.start, range.end)})` : "";
+        if (isSkipWeek(weekKey)) {
+          return `Break${dr}`;
+        }
+        const n = academicWeekNumber(weekKey);
+        return n ? `Week ${n}${dr}` : weekKey;
+      }
+
+      function mergedWeeks(cls) {
+        initAcademicMeta();
+        const set = new Set(sortedWeeks(cls.weeks));
+        for (const sw of state.config.skipWeeks || []) set.add(sw);
+        return [...set].sort((a, b) => a.localeCompare(b));
       }
 
       /********** Slides URL Helpers **********/
@@ -616,9 +651,10 @@
         }
       }
       function populateWeekSelect(cls, selected) {
+        initAcademicMeta();
         const sel = els.weekSelect;
         sel.innerHTML = "";
-        const weeks = sortedWeeks(cls.weeks);
+        const weeks = mergedWeeks(cls);
         if (weeks.length === 0) {
           sel.disabled = true;
           const o = document.createElement("option");
@@ -629,28 +665,31 @@
         }
         sel.disabled = false;
         for (const wk of weeks) {
-          const range = getWeekRange(wk);
           const o = document.createElement("option");
           o.value = wk;
-          o.textContent = range
-            ? `${wk} (${formatDateRange(range.start, range.end)})`
-            : wk;
+          o.textContent = displayWeekLabel(wk);
+          if (isSkipWeek(wk)) {
+            // Allow selection but visually tag it
+            o.dataset.break = "true";
+          }
           if (wk === selected) o.selected = true;
           sel.appendChild(o);
         }
       }
 
       function updateNavButtons(cls) {
-        const weeks = sortedWeeks(cls.weeks);
+        if (!cls) return;
+        const weeks = mergedWeeks(cls);
         const idx = weeks.indexOf(state.weekKey);
         els.prevWeekBtn.disabled = idx <= 0;
         els.nextWeekBtn.disabled = idx === -1 || idx >= weeks.length - 1;
       }
 
       function renderWeekList(cls) {
+        initAcademicMeta();
         const container = document.getElementById("weekList");
         if (!container || !cls) return;
-        const weeks = sortedWeeks(cls.weeks);
+        const weeks = mergedWeeks(cls);
         const current = isoWeekKey(new Date());
         container.innerHTML = "";
         for (const wk of weeks) {
@@ -659,8 +698,19 @@
           let cn = "week-link";
           if (wk === current) cn += " current";
           if (wk === state.weekKey) cn += " active";
+          if (isSkipWeek(wk)) cn += " break";
           btn.className = cn;
-          btn.textContent = wk;
+          if (isSkipWeek(wk)) {
+            const range = getWeekRange(wk);
+            btn.textContent = range
+              ? `Break (${formatDateRange(range.start, range.end)})`
+              : "Break";
+            btn.style.opacity = "0.55";
+            btn.style.fontStyle = "italic";
+          } else {
+            const n = academicWeekNumber(wk);
+            btn.textContent = n ? `W${n}` : wk;
+          }
           btn.setAttribute("role", "listitem");
           btn.addEventListener("click", () => selectWeek(wk));
           container.appendChild(btn);
@@ -722,12 +772,36 @@
         }
         const cls = byId(state.classId);
         if (!cls) return;
+
+        initAcademicMeta();
+
+        // Break (skip) week handling
+        if (isSkipWeek(weekKey)) {
+          state.weekKey = weekKey;
+          showOverlay("Break week – no class sessions.");
+          els.slidesFrame.removeAttribute("src");
+          els.openInNewTab.removeAttribute("href");
+          const range = getWeekRange(weekKey);
+          const dr = range ? formatDateRange(range.start, range.end) : "—";
+          els.activeWeekLabel.textContent = "Break";
+          els.activeWeekRange.textContent = `Dates: ${dr}`;
+          if (updateWeekSelect) {
+            els.weekSelect.value = weekKey;
+          }
+          updateNavButtons(cls);
+          renderWeekList(cls);
+          saveToHash();
+          persist();
+          return;
+        }
+
         const slideId = cls.weeks[weekKey];
         if (!slideId) {
           console.warn("No slide for week", weekKey);
           showOverlay("Slides not available for selected week.");
           return;
         }
+
         hideOverlay();
         state.weekKey = weekKey;
 
@@ -736,7 +810,10 @@
         els.openInNewTab.href = slideOpenUrl(slideId);
 
         // Labels
-        els.activeWeekLabel.textContent = `Week: ${weekKey}`;
+        const aw = academicWeekNumber(weekKey);
+        els.activeWeekLabel.textContent = aw
+          ? `Week ${aw}`
+          : `Week: ${weekKey}`;
         const range = getWeekRange(weekKey);
         els.activeWeekRange.textContent = range
           ? `Dates: ${formatDateRange(range.start, range.end)}`
@@ -777,22 +854,32 @@
         });
       }
 
-      /********** Load Config (external override) **********/
+      /********** Load Config (external only) **********/
       async function loadConfig() {
         try {
           const resp = await fetch("data/agendas.json", { cache: "no-store" });
-          if (resp.ok) {
-            const json = await resp.json();
-            if (json && Array.isArray(json.classes)) {
-              setStatus("External config", "ok");
-              return json;
-            }
+          if (!resp.ok) {
+            setStatus("Config missing", "warn");
+            showOverlay(
+              "Could not load data/agendas.json (HTTP " + resp.status + ").",
+            );
+            return { classes: [] };
           }
-          setStatus("Inline config", "info");
-          return window.AGENDAS_CONFIG;
-        } catch {
-          setStatus("Inline config", "info");
-          return window.AGENDAS_CONFIG;
+          const json = await resp.json();
+          if (!json || !Array.isArray(json.classes)) {
+            setStatus("Invalid config", "warn");
+            showOverlay(
+              "Invalid data/agendas.json format (expected { classes: [...] }).",
+            );
+            return { classes: [] };
+          }
+          setStatus("Config loaded", "ok");
+          return json;
+        } catch (e) {
+          setStatus("Load error", "warn");
+          showOverlay("Error loading data/agendas.json. See console.");
+          console.error("Failed to load config", e);
+          return { classes: [] };
         }
       }
 
@@ -828,6 +915,8 @@
         initDomRefs();
         setStatus("Loading…", "info");
         state.config = await loadConfig();
+        // Initialize academic week metadata before building UI elements
+        initAcademicMeta();
 
         if (
           !state.config ||
@@ -836,7 +925,7 @@
         ) {
           setStatus("Add classes", "warn");
           showOverlay(
-            "No classes configured. Edit window.AGENDAS_CONFIG or provide /data/agendas.json.",
+            "No classes configured. Provide /data/agendas.json with at least one class.",
           );
           return;
         }

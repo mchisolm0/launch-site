@@ -436,14 +436,15 @@
         const isoYear = +m[1],
           isoWeek = +m[2];
         const simple = new Date(Date.UTC(isoYear, 0, 4));
-        const dayOfWeek = simple.getUTCDay() || 7;
+        const dayOfWeek = simple.getUTCDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+        const diff = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek; // days to Monday
         const mondayOfWeek1 = new Date(simple);
-        mondayOfWeek1.setUTCDate(simple.getUTCDate() - dayOfWeek + 1);
+        mondayOfWeek1.setUTCDate(simple.getUTCDate() + diff);
         const monday = new Date(mondayOfWeek1);
         monday.setUTCDate(mondayOfWeek1.getUTCDate() + (isoWeek - 1) * 7);
-        const sunday = new Date(monday);
-        sunday.setUTCDate(monday.getUTCDate() + 6);
-        return { start: monday, end: sunday };
+        const friday = new Date(monday);
+        friday.setUTCDate(monday.getUTCDate() + 4);
+        return { start: monday, end: friday };
       }
       function formatDateRange(start, end) {
         const opts = { month: "short", day: "numeric" };

@@ -26,7 +26,8 @@
         "2025-W49": "1PSG-d5OBNHYHQXiQ6PiZJKPvy5rOeIv9kNwJq-AnntI",
         "2025-W50": "12IsPziPM4CmwTirNAVgAV5vlp1kdjPx9kS_PhTJCpvM",
         "2025-W51": "1wpLRwY7_YdEzEE_L3oh_L8_NNvRZbGVLtiCyunqosjw",
-        "2026-W2": "1EL53zfOz6BknPV5bnsDO5rqOjP1Kb-jVma5mAy0Vias"
+        "2026-W2": "1W8DAtM-6ASCA_S4lH7bTL55D1l3oe4Qtf32jXQZVAZw",
+        "2026-W3": "1CZtG6N_VCN1l26caHVxoEUAsranLuFwZmGp22d7uq8s"
       }
     },
     {
@@ -53,7 +54,8 @@
         "2025-W49": "1KTKq5I75jFoZlhwYx6SdLVjGbfEvL8bK0LvEX2dvz3Q",
         "2025-W50": "1xRP07YAuUL_KjRPixYGXfeJ79e_HRZwssFujdIdi16E",
         "2025-W51": "1-Qnh4lff25ANHaYtwzaj2prU3Ln5Nvko61Y2G-8ERkc",
-        "2026-W2": "1KkogWbJXcBrheoyzBnwkXIklSQzBY2LE8YKyI0YlMeg"
+        "2026-W2": "1KkogWbJXcBrheoyzBnwkXIklSQzBY2LE8YKyI0YlMeg",
+        "2026-W3": "1pdejVdMN5nLgiFzgwOiPs6-z_sNeTEbSrrw034GDWc0"
       }
     },
     {
@@ -80,7 +82,8 @@
         "2025-W49": "1IJjP_8Bf5f5tIVNK7Ml3hS_jQNUpY_vFU257xaHT4qI",
         "2025-W50": "1Pi7oVr7aUlLDfq_-EqrdzyGxE0hehcaMmZBxyxKshYY",
         "2025-W51": "1iH5Sf2ZbVYt7-aJ9alIuzDtB457j7W7Q4NQYLJ8e3Mc",
-        "2026-W2": "1O1V2Q9yC6EZlL6-uS7FZxp2-vJ8mUNRSMa-MsKvikfI"
+        "2026-W2": "1O1V2Q9yC6EZlL6-uS7FZxp2-vJ8mUNRSMa-MsKvikfI",
+        "2026-W3": "12ZqpugCYVWJPSM824Y3LwqWJEbrV-rdgc5ENEN703xA"
       }
     },
     {
@@ -107,7 +110,8 @@
         "2025-W49": "1z0O-MjuEw12zqj0mbUJ4pXwrZrnce1LxXakTRdLNZJg",
         "2025-W50": "16BQmbfjDmzFUf7-nqaZuZnbayUlgSvp34LBRAjF1bhQ",
         "2025-W51": "1L9IWsZFfKILWtDKaS7IMimgUG2r0oixReDylTeU_L4E",
-        "2026-W2": "1CSENv6S30nw42aXaGicj6vBOYoZDWFfKkmOdVxL6i1w"
+        "2026-W2": "1CSENv6S30nw42aXaGicj6vBOYoZDWFfKkmOdVxL6i1w",
+        "2026-W3": "1GLa9nkRajsmssRwEG-WC8tZnIPeI9yI0pO2-GE7HeL0"
       }
     },
     {
@@ -133,14 +137,73 @@
         "2025-W48": "1zJylT-1SjT4Nhq7EOLr7OdA-HgZPHjwAJXy5onSXl0U",
         "2025-W49": "1aTbVYhp1AcasRhdAFu9iJ1y7-r8Jjkgm08jFz8Zwl6A",
         "2025-W50": "1oC7T18NZYiTt1eAZFZGLarXPhxg1KV3ZXytGt1Uhgv4",
-        "2025-W51": "1SvCOsAUW7GREYrLJXt-9mG9fxHaJJMhZvAmD5AS-068"
+        "2025-W51": "1SvCOsAUW7GREYrLJXt-9mG9fxHaJJMhZvAmD5AS-068",
+        "2026-W2": "17pboRMuGIWtIiE9adZI7K3PVthx4CDYU4dGaFaDajos",
+        "2026-W3": "1haayXulRpm9i7EaKdWnJ-nBj9QS1b3Ua4TVC0YphIew",
+        "2026-W4": "1V67BwhQ604dPqK50HqUnWE22wI81HYii1YHo2Icwzb0",
+        "2026-W5": "1vyXQVxfxQqWSqWuLHFkhpEOKzJibaFMv3Io6ZO5UYeQ",
+        "2026-W6": "1FwX6im-CpWaN5RxBJoLVXxf0P15tCg_lH_2M3J6-Y7o",
+        "2026-W7": "1WhbL4OzrKuU_QzUOk0CFPDGOj6dIc1ZW6hLReS4AX3c",
+        "2026-W8": "1JBsyaAO9POhKX9BgLh3H4TxV0w49hCs2g8gEVdTFjY8",
+        "2026-W9": "1iOhYdAJ1h3bF5vDMTWN28G7R7zqd1o8tTCl11yIptkQ",
+        "2026-W10": "1tL4Y3nwu3QEoOZE_JIXA9ffQ6wcY__iSCkxBzqIgha8",
+        "2026-W11": "1T1MHqnoDPbFlT8PvcW2cJBcYKyGVDZsmEOqUN2MYlv8",
+        "2026-W12": "1CBwnkfAy2pLRag7Z9XmKcLXVPEjYsgM71XIE8ZhsLi4",
+        "2026-W13": "18yIhouO9kgFgRQaG9G-UYBA4cVt95sA4YqJOAU5q9sc",
+        "2026-W14": "1XUTJJxr3PzZIk0uPnyp6_y46aveVg5MZiwj_noeP7MU",
+        "2026-W15": "1QAD_UYstCiTAXN5fC4DqwDSOzCydLkMLanIEjycnIWA",
+        "2026-W16": "1OlxOWRgjqny3EIUvQbjycTF0caEM-NStYWBtZdTlfZU",
+        "2026-W17": "1fyHPWzcH6uZDt9gUQi08zL9VlViwMixkfSpZu4uOkYo",
+        "2026-W18": "1zJylT-1SjT4Nhq7EOLr7OdA-HgZPHjwAJXy5onSXl0U",
+        "2026-W19": "1aTbVYhp1AcasRhdAFu9iJ1y7-r8Jjkgm08jFz8Zwl6A",
+        "2026-W20": "1oC7T18NZYiTt1eAZFZGLarXPhxg1KV3ZXytGt1Uhgv4",
+        "2026-W21": "1SvCOsAUW7GREYrLJXt-9mG9fxHaJJMhZvAmD5AS-068"
       }
     },
     {
       "id": "cs-1-semester",
       "name": "CS 1 Semester",
       "weeks": {
-        "2026-W2": "13EkuDoXSuG7DElDOV--tkYjm1l2bJVGZyBJSN6qrtDk"
+        "2025-W32": "1Ku8-bwRH64DDvl5dZwZxKY6_vCtP_GtdiexNhswoUiY",
+        "2025-W33": "1W8DAtM-6ASCA_S4lH7bTL55D1l3oe4Qtf32jXQZVAZw",
+        "2025-W34": "1syoDTFLsyy1TP77PmaQafkco0FoTccxzg5W-Ai3oOKs",
+        "2025-W35": "1RC1vaPpkQ_YEWAKAxu8k5KKHcLOAIUMSYuA0xkT6aIw",
+        "2025-W36": "1yGqgW7WHCA3z9E_FFH-TJOG7vlzEK0sLxKUIARnDtDw",
+        "2025-W37": "1sCNKheNBH0cUNHNRo_aBuraji3uiRdPmRIuOmP5NsXM",
+        "2025-W38": "1wSjXclHUQ1_ZKYXpoU7hPfGInjbevVHnKc63pNKljQs",
+        "2025-W39": "1-FqPPFL5kEvUNoXgs587zaSsmCDQyr6GY2xbIbLD5eQ",
+        "2025-W40": "1p-Y7UPDSbdvHUnquozEDqGPo09mexyAH7OOMupsaxzg",
+        "2025-W41": "10bJhgDis1GZ7Hz866QnsZUo6uFQ3s-RBd7oWWjmyog0",
+        "2025-W42": "1EVBC0mCgInMknpH3dQLAiWShVd3WDjdkw8HlwoyMva8",
+        "2025-W43": "1cGlyWgFcpcdBh7A3OsQNTmjiIBU-jVXBNp4sVigYjh0",
+        "2025-W44": "1ehKShLLyNXSTxfrm_uT4tA95HpmNg0mFO04lPDarvqs",
+        "2025-W45": "1fRuuciAikjQufnWXqEwl9jELpV8PIO3DsTGcJ3KtwVg",
+        "2025-W46": "1sgX3Q4YWXQqdB7GtEj0JvkHQ7XwRR4Q7D9k8l2LYdrQ",
+        "2025-W47": "18gjUBC_o3LFUZ-xIqI3StOdinSXyBd3ZrdHzFDCRoKY",
+        "2025-W48": "1QcndtGZ68ohilF_spuPsM4mvyYyWEWZczTUE4rysURk",
+        "2025-W49": "1PSG-d5OBNHYHQXiQ6PiZJKPvy5rOeIv9kNwJq-AnntI",
+        "2025-W50": "12IsPziPM4CmwTirNAVgAV5vlp1kdjPx9kS_PhTJCpvM",
+        "2025-W51": "1wpLRwY7_YdEzEE_L3oh_L8_NNvRZbGVLtiCyunqosjw",
+        "2026-W2": "13EkuDoXSuG7DElDOV--tkYjm1l2bJVGZyBJSN6qrtDk",
+        "2026-W3": "1W8DAtM-6ASCA_S4lH7bTL55D1l3oe4Qtf32jXQZVAZw",
+        "2026-W4": "1syoDTFLsyy1TP77PmaQafkco0FoTccxzg5W-Ai3oOKs",
+        "2026-W5": "1RC1vaPpkQ_YEWAKAxu8k5KKHcLOAIUMSYuA0xkT6aIw",
+        "2026-W6": "1yGqgW7WHCA3z9E_FFH-TJOG7vlzEK0sLxKUIARnDtDw",
+        "2026-W7": "1sCNKheNBH0cUNHNRo_aBuraji3uiRdPmRIuOmP5NsXM",
+        "2026-W8": "1wSjXclHUQ1_ZKYXpoU7hPfGInjbevVHnKc63pNKljQs",
+        "2026-W9": "1-FqPPFL5kEvUNoXgs587zaSsmCDQyr6GY2xbIbLD5eQ",
+        "2026-W10": "1p-Y7UPDSbdvHUnquozEDqGPo09mexyAH7OOMupsaxzg",
+        "2026-W11": "10bJhgDis1GZ7Hz866QnsZUo6uFQ3s-RBd7oWWjmyog0",
+        "2026-W12": "1EVBC0mCgInMknpH3dQLAiWShVd3WDjdkw8HlwoyMva8",
+        "2026-W13": "1cGlyWgFcpcdBh7A3OsQNTmjiIBU-jVXBNp4sVigYjh0",
+        "2026-W14": "1ehKShLLyNXSTxfrm_uT4tA95HpmNg0mFO04lPDarvqs",
+        "2026-W15": "1fRuuciAikjQufnWXqEwl9jELpV8PIO3DsTGcJ3KtwVg",
+        "2026-W16": "1sgX3Q4YWXQqdB7GtEj0JvkHQ7XwRR4Q7D9k8l2LYdrQ",
+        "2026-W17": "18gjUBC_o3LFUZ-xIqI3StOdinSXyBd3ZrdHzFDCRoKY",
+        "2026-W18": "1QcndtGZ68ohilF_spuPsM4mvyYyWEWZczTUE4rysURk",
+        "2026-W19": "1PSG-d5OBNHYHQXiQ6PiZJKPvy5rOeIv9kNwJq-AnntI",
+        "2026-W20": "12IsPziPM4CmwTirNAVgAV5vlp1kdjPx9kS_PhTJCpvM",
+        "2026-W21": "1wpLRwY7_YdEzEE_L3oh_L8_NNvRZbGVLtiCyunqosjw"
       }
     }
   ]

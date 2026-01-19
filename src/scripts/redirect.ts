@@ -10,8 +10,13 @@ function readData(): RedirectData | null {
   const el = document.getElementById('redirect-data');
   if (!el) return null;
 
+  const classId = el.getAttribute('data-class-id');
+  const weeksAscStr = el.getAttribute('data-weeks-asc');
+
+  if (!classId || !weeksAscStr) return null;
+
   try {
-    return JSON.parse(el.textContent || 'null') as RedirectData;
+    return { classId, weeksAsc: JSON.parse(weeksAscStr) };
   } catch {
     return null;
   }

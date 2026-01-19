@@ -37,8 +37,6 @@ const weeksAsc = cls
     </div>
   </main>
 
-  <script id="redirect-data" type="application/json">
-    {JSON.stringify({ classId, weeksAsc })}
-  </script>
+<div id="redirect-data" data-class-id={classId} data-weeks-asc={JSON.stringify(weeksAsc)}></div>
   <script type="module" src={redirectScriptUrl}></script>
 </BaseLayout>

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { agendasConfig, getClassById } from '../../../lib/agendas';
+
+import redirectScriptUrl from '../../../scripts/redirect.ts?url';
+
+export function getStaticPaths() {
+  return agendasConfig.classes.map((cls) => ({
+    params: { classId: cls.id },
+  }));
+}
+
+const { classId } = Astro.params;
+const cls = classId ? getClassById(agendasConfig, classId) : null;
+
+const weeksAsc = cls
+  ? Object.keys(cls.weeks)
+      .filter((wk) => Boolean(cls.weeks[wk]))
+      .sort((a, b) => a.localeCompare(b))
+  : [];
+---
+
+<BaseLayout title={cls ? `${cls.name} · Launch Slides` : 'Launch Slides'}>
+  <header>
+    <div class="topbar">
+      <a class="btn-inline" href="/">Home</a>
+      <div class="spacer"></div>
+      <span class="tag">Redirecting…</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="viewer-container">
+      <div id="messageOverlay" role="alert">
+        Loading current week…
+      </div>
+    </div>
+  </main>
+
+  <script id="redirect-data" type="application/json">
+    {JSON.stringify({ classId, weeksAsc })}
+  </script>
+  <script type="module" src={redirectScriptUrl}></script>
+</BaseLayout>

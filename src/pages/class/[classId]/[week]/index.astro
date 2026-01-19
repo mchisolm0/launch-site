@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { agendasConfig, getClassById } from '../../../../lib/agendas';
+import {
+  academicWeekNumber,
+  displayWeekLabel,
+  initAcademicMeta,
+  isSkipWeek,
+  mergedWeeks,
+} from '../../../../lib/academic';
+import {
+  formatDateRange,
+  getWeekRange,
+  isoWeekKey,
+  normalizeWeekKey,
+  parseWeekKey,
+} from '../../../../lib/week';
+
+import weeklyScriptUrl from '../../../../scripts/weekly.ts?url';
+
+const meta = initAcademicMeta(agendasConfig);
+
+export function getStaticPaths() {
+  const meta = initAcademicMeta(agendasConfig);
+  return agendasConfig.classes.flatMap((cls) => {
+    const weeks = mergedWeeks(meta, cls);
+
+    return weeks.flatMap((wk) => {
+      const parsed = parseWeekKey(wk);
+      const aliases = new Set<string>([wk]);
+
+      // Back-compat: allow /2026-W2/ in addition to /2026-W02/
+      if (parsed && parsed.isoWeek < 10) {
+        aliases.add(`${parsed.isoYear}-W${parsed.isoWeek}`);
+      }
+
+      return [...aliases].map((week) => ({
+        params: { classId: cls.id, week },
+      }));
+    });
+  });
+}
+
+const { classId, week: weekParam } = Astro.params;
+const cls = classId ? getClassById(agendasConfig, classId) : null;
+
+const weekKey = weekParam ? normalizeWeekKey(weekParam) || weekParam : null;
+
+const weeks = cls ? mergedWeeks(meta, cls) : [];
+const isBreak = weekKey ? isSkipWeek(meta, weekKey) : false;
+
+const slideId = cls && weekKey && !isBreak ? cls.weeks[weekKey] || null : null;
+
+const idx = weekKey ? weeks.indexOf(weekKey) : -1;
+const prevWeek = idx > 0 ? weeks[idx - 1] : null;
+const nextWeek = idx !== -1 && idx < weeks.length - 1 ? weeks[idx + 1] : null;
+
+const range = weekKey ? getWeekRange(weekKey) : null;
+const dateRange = range ? formatDateRange(range.start, range.end) : '—';
+
+const aw = weekKey ? academicWeekNumber(meta, weekKey) : null;
+const activeLabel = isBreak
+  ? 'Break'
+  : aw
+    ? `Week ${aw}`
+    : weekKey
+      ? `Week: ${weekKey}`
+      : 'Week: —';
+
+const currentWeekKey = isoWeekKey(new Date());
+
+const overlayMessage = !cls
+  ? 'Class not found.'
+  : !weekKey
+    ? 'Week not found.'
+    : isBreak
+      ? 'Break week — no class sessions.'
+      : !slideId
+        ? 'Slides not available for selected week.'
+        : '';
+---
+
+<BaseLayout title={cls ? `${cls.name} · ${activeLabel}` : 'Launch Slides'}>
+  <header>
+    <div class="topbar">
+      <div class="controls" role="group" aria-label="Agenda controls">
+        <div class="control">
+          <label for="classSelect">Class</label>
+          <select id="classSelect" aria-label="Select class" disabled={!cls}>
+            {agendasConfig.classes.map((c) => (
+              <option value={c.id} selected={c.id === classId}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="weekSelect">Week</label>
+          <select id="weekSelect" aria-label="Select week" disabled={!cls || weeks.length === 0}>
+            {weeks.map((wk) => (
+              <option value={wk} selected={wk === weekKey}>{displayWeekLabel(meta, wk)}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="control nav-cluster" aria-label="Week navigation">
+          <a
+            class="btn-inline"
+            href={prevWeek ? `/class/${classId}/${prevWeek}/` : '#'}
+            aria-disabled={!prevWeek}
+            tabindex={prevWeek ? undefined : -1}
+          >
+            ← Prev
+          </a>
+          <a
+            class="btn-inline"
+            href={nextWeek ? `/class/${classId}/${nextWeek}/` : '#'}
+            aria-disabled={!nextWeek}
+            tabindex={nextWeek ? undefined : -1}
+          >
+            Next →
+          </a>
+        </div>
+
+        <div class="spacer"></div>
+
+        <button
+          id="toggleFullBtn"
+          class="btn-inline"
+          type="button"
+          aria-pressed="false"
+          aria-label="Toggle fullscreen view of slides"
+        >
+          ⛶ Fullscreen
+        </button>
+
+        <div class="control details">
+          <label class="sr-only" for="optionsDetails">Options</label>
+          <details id="optionsDetails">
+            <summary class="btn-inline" role="button">≡ Options</summary>
+            <div class="options-panel">
+              <div class="options-grid">
+                <div class="sub-control">
+                  <div class="tag small">{activeLabel}</div>
+                </div>
+                <div class="sub-control">
+                  <div class="tag small">Dates: {dateRange}</div>
+                </div>
+                <div class="sub-control">
+                  <a
+                    id="openInNewTab"
+                    class="btn-inline"
+                    href={slideId ? `https://docs.google.com/presentation/d/${encodeURIComponent(slideId)}/edit?usp=sharing` : undefined}
+                    target="_blank"
+                    rel="noopener"
+                    aria-disabled={!slideId}
+                    tabindex={slideId ? undefined : -1}
+                  >
+                    Open in Tab
+                  </a>
+                </div>
+                <div class="sub-control">
+                  <button id="copyLinkBtn" class="btn-inline" type="button">Copy Link</button>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="viewer-container">
+      <div id="messageOverlay" role="alert" style={overlayMessage ? 'display:flex' : 'display:none'}>
+        {overlayMessage}
+      </div>
+      <iframe
+        id="slidesFrame"
+        class="viewer"
+        title="Google Slides agenda"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+
+      <button id="exitFullscreenBtn" class="btn-inline" type="button" aria-label="Exit fullscreen">
+        Exit
+      </button>
+    </div>
+
+    {cls && weeks.length > 0 && (
+      <nav class="week-strip" aria-label="Week list">
+        {weeks.map((wk) => {
+          const isCurrent = wk === currentWeekKey;
+          const isActive = wk === weekKey;
+          const isBreakWk = isSkipWeek(meta, wk);
+          const n = academicWeekNumber(meta, wk);
+
+          const className = `week-chip${isCurrent ? ' current' : ''}${isActive ? ' active' : ''}${
+            isBreakWk ? ' break' : ''
+          }`;
+
+          return (
+            <a class={className} href={`/class/${classId}/${wk}/`}>
+              {isBreakWk ? 'Break' : n ? `W${n}` : wk}
+            </a>
+          );
+        })}
+      </nav>
+    )}
+  </main>
+
+  <script id="weekly-data" type="application/json">
+    {JSON.stringify({
+      classId,
+      weekKey: weekKey,
+      weekKeyParam: weekParam,
+      slideId,
+      isSkipWeek: isBreak,
+    })}
+  </script>
+  <script type="module" src={weeklyScriptUrl}></script>
+
+  <footer style="padding: 10px 16px 18px; color: var(--muted); font-size: 12px">
+    <a href="/">Home</a>
+    <span style="padding: 0 8px">·</span>
+    <code>{classId}</code>
+    <span style="padding: 0 8px">·</span>
+    <code>{weekKey}</code>
+  </footer>
+</BaseLayout>

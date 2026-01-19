@@ -1,1 +1,10 @@
 .aider*
+
+# Node / Astro
+node_modules/
+dist/
+.astro/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*

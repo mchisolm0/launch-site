@@ -194,12 +194,25 @@ const overlayMessage = !cls
       ></iframe>
 
       <div class="fullscreen-class-switch">
-        <a href="/class/cs-1-pathway/?fullscreen=true" title="1 - CS 1 Pathway">1</a>
-        <a href="/class/cs-3/?fullscreen=true" title="2 - CS 3 AP CS Principles">2</a>
-        <a href="/class/cs-4/?fullscreen=true" title="3 - CS 4 AP CS A">3</a>
-        <a href="/class/cs-2/?fullscreen=true" title="4 - CS 2 Mobile Apps">4</a>
-        <a href="/class/mythology/?fullscreen=true" title="5 - Mythology">5</a>
-        <a href="/class/cs-1-semester/?fullscreen=true" title="6 - CS 1 Semester">6</a>
+        {(() => {
+          const CLASS_ORDER = [
+            'cs-1-pathway',
+            'cs-3',
+            'cs-4',
+            'cs-2',
+            'mythology',
+            'cs-1-semester',
+          ];
+          return CLASS_ORDER.map((id, idx) => {
+            const cls = agendasConfig.classes.find((c) => c.id === id);
+            if (!cls) return null;
+            return (
+              <a href={`/class/${cls.id}/?fullscreen=true`} title={`${idx + 1} - ${cls.name}`}>
+                {idx + 1}
+              </a>
+            );
+          });
+        })()}
       </div>
 
       <div id="keyboardCapture" class="keyboard-capture"></div>

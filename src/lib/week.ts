@@ -72,8 +72,8 @@ export function getWeekRange(weekKey: string): { start: Date; end: Date } | null
 }
 
 export function formatDateRange(start: Date, end: Date): string {
-  const opts = { month: 'short', day: 'numeric' } as const;
-  const optsY = { month: 'short', day: 'numeric', year: 'numeric' } as const;
+  const opts = { month: 'short', day: 'numeric', timeZone: 'UTC' } as const;
+  const optsY = { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' } as const;
   const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
 
   const s = start.toLocaleDateString(undefined, sameYear ? opts : optsY);

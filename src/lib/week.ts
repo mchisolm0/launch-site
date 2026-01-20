@@ -16,10 +16,29 @@ export function isoWeekKey(date: Date): string {
   return `${isoYear}-W${pad2(isoWeek)}`;
 }
 
+export function weeksInISOYear(year: number): number {
+  const jan1 = new Date(Date.UTC(year, 0, 1));
+  const dec31 = new Date(Date.UTC(year, 11, 31));
+
+  const jan1Day = jan1.getUTCDay() || 7; // Mon=1, ..., Sun=7
+  const dec31Day = dec31.getUTCDay() || 7;
+
+  if (jan1Day === 4 || dec31Day === 4) {
+    return 53;
+  }
+  return 52;
+}
+
 export function parseWeekKey(weekKey: string): { isoYear: number; isoWeek: number } | null {
   const m = /^(\d{4})-W(\d{1,2})$/.exec(weekKey);
   if (!m) return null;
-  return { isoYear: Number(m[1]), isoWeek: Number(m[2]) };
+
+  const isoYear = Number(m[1]);
+  const isoWeek = Number(m[2]);
+
+  if (isoWeek < 1 || isoWeek > weeksInISOYear(isoYear)) return null;
+
+  return { isoYear, isoWeek };
 }
 
 export function normalizeWeekKey(weekKey: string): string | null {
@@ -33,6 +52,9 @@ export function getWeekRange(weekKey: string): { start: Date; end: Date } | null
   if (!parsed) return null;
 
   const { isoYear, isoWeek } = parsed;
+
+  if (isoWeek > weeksInISOYear(isoYear)) return null;
+
   const simple = new Date(Date.UTC(isoYear, 0, 4));
   const dayOfWeek = simple.getUTCDay(); // 0=Sun, 1=Mon, ..., 6=Sat
   const diff = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek; // days to Monday

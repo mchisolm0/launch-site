@@ -1,7 +1,16 @@
 import { z } from 'zod';
 import { normalizeWeekKey } from './week';
 
-const WeekKeyLoose = z.string().regex(/^\d{4}-W\d{1,2}$/);
+const WeekKeyLoose = z
+  .string()
+  .regex(/^\d{4}-W\d{1,2}$/)
+  .refine(
+    (s) => {
+      const num = parseInt(s.split('-W')[1], 10);
+      return num >= 1 && num <= 53;
+    },
+    { message: 'Week must be W01–W53' },
+  );
 
 export const AgendasClassSchema = z.object({
   id: z.string().min(1),

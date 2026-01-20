@@ -51,14 +51,6 @@ const isBreak = weekKey ? isSkipWeek(meta, weekKey) : false;
 
 const slideId = cls && weekKey && !isBreak ? cls.weeks[weekKey] || null : null;
 
-const weeklyDataJson = JSON.stringify({
-  classId,
-  weekKey,
-  weekKeyParam: weekParam,
-  slideId,
-  isSkipWeek: isBreak,
-});
-
 const idx = weekKey ? weeks.indexOf(weekKey) : -1;
 const prevWeek = idx > 0 ? weeks[idx - 1] : null;
 const nextWeek = idx !== -1 && idx < weeks.length - 1 ? weeks[idx + 1] : null;
@@ -194,25 +186,11 @@ const overlayMessage = !cls
       ></iframe>
 
       <div class="fullscreen-class-switch">
-        {(() => {
-          const CLASS_ORDER = [
-            'cs-1-pathway',
-            'cs-3',
-            'cs-4',
-            'cs-2',
-            'mythology',
-            'cs-1-semester',
-          ];
-          return CLASS_ORDER.map((id, idx) => {
-            const cls = agendasConfig.classes.find((c) => c.id === id);
-            if (!cls) return null;
-            return (
-              <a href={`/class/${cls.id}/?fullscreen=true`} title={`${idx + 1} - ${cls.name}`}>
-                {idx + 1}
-              </a>
-            );
-          });
-        })()}
+        {agendasConfig.classes.map((cls, idx) => (
+          <a href={`/class/${cls.id}/?fullscreen=true`} title={`${idx + 1} - ${cls.name}`}>
+            {idx + 1}
+          </a>
+        ))}
       </div>
 
       <div id="keyboardCapture" class="keyboard-capture"></div>
@@ -224,5 +202,19 @@ const overlayMessage = !cls
   </main>
 
 <div id="weekly-data" data-class-id={classId} data-week-key={weekKey} data-week-key-param={weekParam} data-slide-id={slideId} data-is-skip-week={isBreak ? 'true' : 'false'}></div>
+  <script is:inline>
+    (function() {
+      const el = document.getElementById('weekly-data');
+      if (el) {
+        window.weeklyData = {
+          classId: el.dataset.classId || null,
+          weekKey: el.dataset.weekKey || null,
+          weekParam: el.dataset.weekKeyParam || null,
+          slideId: el.dataset.slideId || null,
+          isBreak: el.dataset.isSkipWeek === 'true'
+        };
+      }
+    })();
+  </script>
   <script type="module" src={weeklyScriptUrl}></script>
 </BaseLayout>

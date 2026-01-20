@@ -59,7 +59,7 @@ export function academicWeekNumber(meta: AcademicMeta, weekKey: string): number 
   if (isSkipWeek(meta, weekKey)) return null;
 
   const diffWeeks = Math.round(
-    (wkMon.getTime() - meta.startMonday.getTime()) / (7 * 24 * 60 * 60 * 1000) + 1,
+    (wkMon.getTime() - meta.startMonday.getTime()) / (7 * 24 * 60 * 60 * 1000),
   );
 
   let skipsUpTo = 0;

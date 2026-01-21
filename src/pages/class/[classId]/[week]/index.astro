@@ -202,16 +202,16 @@ const overlayMessage = !cls
   </main>
 
 <div id="weekly-data" data-class-id={classId} data-week-key={weekKey} data-week-key-param={weekParam} data-slide-id={slideId} data-is-skip-week={isBreak ? 'true' : 'false'}></div>
-  <script is:inline>
+  <script>
     (function() {
-      const el = document.getElementById('weekly-data');
+      var el = document.getElementById('weekly-data');
       if (el) {
         window.weeklyData = {
-          classId: el.dataset.classId || null,
-          weekKey: el.dataset.weekKey || null,
-          weekParam: el.dataset.weekKeyParam || null,
-          slideId: el.dataset.slideId || null,
-          isBreak: el.dataset.isSkipWeek === 'true'
+          classId: el.getAttribute('data-class-id'),
+          weekKey: el.getAttribute('data-week-key'),
+          weekParam: el.getAttribute('data-week-key-param'),
+          slideId: el.getAttribute('data-slide-id'),
+          isBreak: el.getAttribute('data-is-skip-week') === 'true'
         };
       }
     })();

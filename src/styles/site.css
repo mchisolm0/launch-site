@@ -27,6 +27,9 @@ body {
     "Apple Color Emoji", "Segoe UI Emoji";
   background: var(--bg);
   color: var(--text);
+}
+
+body.slides-full {
   overflow: hidden;
 }
 

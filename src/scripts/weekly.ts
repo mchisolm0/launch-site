@@ -46,9 +46,9 @@ const exitFullscreenBtn = $('exitFullscreenBtn') as HTMLButtonElement | null;
 
 const CLASS_ORDER = [
   'cs-1-pathway',
+  'cs-2',
   'cs-3',
   'cs-4',
-  'cs-2',
   'mythology',
   'cs-1-semester',
 ];
@@ -75,9 +75,9 @@ requestAnimationFrame(() => {
 if (data) {
   // If the user hits an unpadded week URL (e.g. 2026-W2), redirect to the canonical 2026-W02.
   if (data.weekKeyParam !== data.weekKey) {
-    window.location.replace(
-      `/class/${encodeURIComponent(data.classId)}/${encodeURIComponent(data.weekKey)}/`,
-    );
+    const url = new URL(window.location.href);
+    url.pathname = `/class/${encodeURIComponent(data.classId)}/${encodeURIComponent(data.weekKey)}/`;
+    window.location.replace(url.toString());
   }
 
   classSelect?.addEventListener('change', () => {

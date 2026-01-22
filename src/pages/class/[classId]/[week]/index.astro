@@ -18,6 +18,16 @@ import {
 
 import weeklyScriptUrl from '../../../../scripts/weekly.ts?url';
 
+interface Window {
+  weeklyData?: {
+    classId: string;
+    weekKey: string;
+    weekParam: string;
+    slideId: string | null;
+    isBreak: boolean;
+  };
+}
+
 const meta = initAcademicMeta(agendasConfig);
 
 export function getStaticPaths() {
@@ -187,7 +197,11 @@ const overlayMessage = !cls
 
       <div class="fullscreen-class-switch">
         {agendasConfig.classes.map((cls, idx) => (
-          <a href={`/class/${cls.id}/?fullscreen=true`} title={`${idx + 1} - ${cls.name}`}>
+          <a
+            href={`/class/${cls.id}/`}
+            title={`${idx + 1} - ${cls.name}`}
+            onclick={`sessionStorage.setItem('wantFullscreen', 'true');`}
+          >
             {idx + 1}
           </a>
         ))}
@@ -202,19 +216,5 @@ const overlayMessage = !cls
   </main>
 
 <div id="weekly-data" data-class-id={classId} data-week-key={weekKey} data-week-key-param={weekParam} data-slide-id={slideId} data-is-skip-week={isBreak ? 'true' : 'false'}></div>
-  <script>
-    (function() {
-      var el = document.getElementById('weekly-data');
-      if (el) {
-        window.weeklyData = {
-          classId: el.getAttribute('data-class-id'),
-          weekKey: el.getAttribute('data-week-key'),
-          weekParam: el.getAttribute('data-week-key-param'),
-          slideId: el.getAttribute('data-slide-id'),
-          isBreak: el.getAttribute('data-is-skip-week') === 'true'
-        };
-      }
-    })();
-  </script>
   <script type="module" src={weeklyScriptUrl}></script>
 </BaseLayout>

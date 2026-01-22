@@ -8,6 +8,18 @@ type WeeklyPageData = {
   isSkipWeek: boolean;
 };
 
+declare global {
+  interface Window {
+    weeklyData?: {
+      classId: string;
+      weekKey: string;
+      weekKeyParam: string;
+      slideId: string | null;
+      isSkipWeek: boolean;
+    };
+  }
+}
+
 function readData(): WeeklyPageData | null {
   const el = document.getElementById('weekly-data');
   if (!el) return null;
@@ -141,7 +153,10 @@ function setFullscreen(on: boolean) {
 }
 
 // Check URL for fullscreen param on load
-if (new URLSearchParams(window.location.search).get('fullscreen') === 'true') {
+if (sessionStorage.getItem("wantFullscreen") === "true") {
+  sessionStorage.removeItem("wantFullscreen");
+  setFullscreen(true);
+} else if (new URLSearchParams(window.location.search).get("fullscreen") === "true") {
   setFullscreen(true);
 }
 
@@ -185,5 +200,5 @@ function handleFullscreenKeys(e: KeyboardEvent) {
 }
 
 // Use both window and document capture for iframe keyboard events
-window.addEventListener('keydown', handleFullscreenKeys, true);
-document.addEventListener('keydown', handleFullscreenKeys, true);
+window.addEventListener("keydown", handleFullscreenKeys, true);
+document.addEventListener("keydown", handleFullscreenKeys, true);

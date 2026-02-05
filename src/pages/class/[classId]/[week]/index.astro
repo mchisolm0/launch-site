@@ -3,7 +3,6 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import { agendasConfig, getClassById } from '../../../../lib/agendas';
 import {
   academicWeekNumber,
-  displayWeekLabel,
   initAcademicMeta,
   isSkipWeek,
   mergedWeeks,
@@ -14,6 +13,7 @@ import {
   isoWeekKey,
   normalizeWeekKey,
   parseWeekKey,
+  validateWeekKey,
 } from '../../../../lib/week';
 
 import weeklyScriptUrl from '../../../../scripts/weekly.ts?url';
@@ -57,25 +57,34 @@ const cls = classId ? getClassById(agendasConfig, classId) : null;
 const weekKey = weekParam ? normalizeWeekKey(weekParam) || weekParam : null;
 
 const weeks = cls ? mergedWeeks(meta, cls) : [];
-const isBreak = weekKey ? isSkipWeek(meta, weekKey) : false;
+const validation = weekKey ? validateWeekKey(weekKey) : null;
+const isInvalid = validation ? !validation.valid : false;
+const invalidReason =
+  validation && !validation.valid
+    ? validation.reason === 'format'
+      ? 'Week keys must match YYYY-W## (example: 2026-W02).'
+      : validation.reason === 'range'
+        ? 'Week number must be between 1 and 53.'
+        : `Week ${validation.isoWeek} does not exist in ${validation.isoYear} (max ${validation.maxWeeks}).`
+    : '';
+
+const isBreak = weekKey ? !isInvalid && isSkipWeek(meta, weekKey) : false;
 
 const slideId = cls && weekKey && !isBreak ? cls.weeks[weekKey] || null : null;
-
-const idx = weekKey ? weeks.indexOf(weekKey) : -1;
-const prevWeek = idx > 0 ? weeks[idx - 1] : null;
-const nextWeek = idx !== -1 && idx < weeks.length - 1 ? weeks[idx + 1] : null;
 
 const range = weekKey ? getWeekRange(weekKey) : null;
 const dateRange = range ? formatDateRange(range.start, range.end) : '—';
 
-const aw = weekKey ? academicWeekNumber(meta, weekKey) : null;
-const activeLabel = isBreak
-  ? 'Break'
-  : aw
-    ? `Week ${aw}`
-    : weekKey
-      ? `Week: ${weekKey}`
-      : 'Week: —';
+const aw = weekKey && !isInvalid ? academicWeekNumber(meta, weekKey) : null;
+const activeLabel = !weekKey
+  ? 'Week: —'
+  : isInvalid
+    ? `Invalid: ${weekKey}`
+    : isBreak
+      ? 'Break'
+      : aw
+        ? `Week ${aw}`
+        : `Week: ${weekKey}`;
 
 const currentWeekKey = isoWeekKey(new Date());
 
@@ -117,15 +126,24 @@ const overlayMessage = !cls
           {weeks.map((wk) => {
             const isCurrent = wk === currentWeekKey;
             const isActive = wk === weekKey;
-            const isBreakWk = isSkipWeek(meta, wk);
+            const wkValidation = validateWeekKey(wk);
+            const invalidTitle = !wkValidation.valid
+              ? wkValidation.reason === 'format'
+                ? `Invalid week key: ${wk}. Use YYYY-W##.`
+                : wkValidation.reason === 'range'
+                  ? `Invalid week key: ${wk}. Week number must be 1–53.`
+                  : `Invalid week key: ${wk}. ${wkValidation.isoYear} has ${wkValidation.maxWeeks} weeks.`
+              : undefined;
+            const isInvalidWk = !wkValidation.valid;
+            const isBreakWk = !isInvalidWk && isSkipWeek(meta, wk);
             const n = academicWeekNumber(meta, wk);
 
             const className = `week-chip${isCurrent ? ' current' : ''}${isActive ? ' active' : ''}${
               isBreakWk ? ' break' : ''
-            }`;
+            }${isInvalidWk ? ' invalid' : ''}`;
 
             return (
-              <a class={className} href={`/class/${classId}/${wk}/`}>
+              <a class={className} href={`/class/${classId}/${wk}/`} title={invalidTitle}>
                 {isBreakWk ? 'Break' : n ? `W${n}` : wk}
               </a>
             );
@@ -183,6 +201,16 @@ const overlayMessage = !cls
 
   <main>
     <div class="viewer-container">
+      {isInvalid && (
+        <div class="warning-banner" role="status">
+          <div class="warning-title">Invalid week key</div>
+          <div class="warning-body">
+            <div><strong>Week:</strong> {weekKey}</div>
+            <div>{invalidReason}</div>
+            <div>Slides will still load if a deck is available.</div>
+          </div>
+        </div>
+      )}
       <div id="messageOverlay" role="alert" style={overlayMessage ? 'display:flex' : 'display:none'}>
         {overlayMessage}
       </div>
@@ -215,6 +243,14 @@ const overlayMessage = !cls
     </div>
   </main>
 
-<div id="weekly-data" data-class-id={classId} data-week-key={weekKey} data-week-key-param={weekParam} data-slide-id={slideId} data-is-skip-week={isBreak ? 'true' : 'false'}></div>
+<div
+  id="weekly-data"
+  data-class-id={classId}
+  data-week-key={weekKey}
+  data-week-key-param={weekParam}
+  data-slide-id={slideId}
+  data-is-skip-week={isBreak ? 'true' : 'false'}
+  data-class-order={JSON.stringify(agendasConfig.classes.map((c) => c.id))}
+></div>
   <script type="module" src={weeklyScriptUrl}></script>
 </BaseLayout>

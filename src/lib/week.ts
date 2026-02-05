@@ -29,22 +29,45 @@ export function weeksInISOYear(year: number): number {
   return 52;
 }
 
-export function parseWeekKey(weekKey: string): { isoYear: number; isoWeek: number } | null {
+export type WeekKeyValidation =
+  | { valid: true; isoYear: number; isoWeek: number; normalized: string; maxWeeks: number }
+  | { valid: false; reason: 'format' | 'range' | 'year-range'; isoYear?: number; isoWeek?: number; maxWeeks?: number };
+
+export function validateWeekKey(weekKey: string): WeekKeyValidation {
   const m = /^(\d{4})-W(\d{1,2})$/.exec(weekKey);
-  if (!m) return null;
+  if (!m) return { valid: false, reason: 'format' };
 
   const isoYear = Number(m[1]);
   const isoWeek = Number(m[2]);
 
-  if (isoWeek < 1 || isoWeek > weeksInISOYear(isoYear)) return null;
+  if (isoWeek < 1 || isoWeek > 53) {
+    return { valid: false, reason: 'range', isoYear, isoWeek };
+  }
 
-  return { isoYear, isoWeek };
+  const maxWeeks = weeksInISOYear(isoYear);
+  if (isoWeek > maxWeeks) {
+    return { valid: false, reason: 'year-range', isoYear, isoWeek, maxWeeks };
+  }
+
+  return {
+    valid: true,
+    isoYear,
+    isoWeek,
+    normalized: `${isoYear}-W${pad2(isoWeek)}`,
+    maxWeeks,
+  };
+}
+
+export function parseWeekKey(weekKey: string): { isoYear: number; isoWeek: number } | null {
+  const v = validateWeekKey(weekKey);
+  if (!v.valid) return null;
+  return { isoYear: v.isoYear, isoWeek: v.isoWeek };
 }
 
 export function normalizeWeekKey(weekKey: string): string | null {
-  const parsed = parseWeekKey(weekKey);
-  if (!parsed) return null;
-  return `${parsed.isoYear}-W${pad2(parsed.isoWeek)}`;
+  const v = validateWeekKey(weekKey);
+  if (!v.valid) return null;
+  return v.normalized;
 }
 
 export function getWeekRange(weekKey: string): { start: Date; end: Date } | null {

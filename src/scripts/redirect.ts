@@ -28,7 +28,9 @@ if (data) {
   const target = mostRecentWeekAtOrBefore(data.weeksAsc, today);
 
   if (target) {
-    window.location.replace(`/class/${encodeURIComponent(data.classId)}/${encodeURIComponent(target)}/`);
+    const url = new URL(window.location.href);
+    url.pathname = `/class/${encodeURIComponent(data.classId)}/${encodeURIComponent(target)}/`;
+    window.location.replace(url.toString());
   } else {
     const overlay = document.getElementById('messageOverlay');
     if (overlay) {

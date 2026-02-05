@@ -34,8 +34,8 @@ function normalizeWeeksMap(weeks: Record<string, string>): Record<string, string
   const out: Record<string, string> = {};
   for (const [wk, id] of Object.entries(weeks)) {
     const normalized = normalizeWeekKey(wk);
-    if (!normalized) continue;
-    out[normalized] = id;
+    const key = normalized || wk;
+    out[key] = id;
   }
   return out;
 }
@@ -54,7 +54,7 @@ export const agendasConfig: AgendasConfig = (() => {
   const skipWeeks = parsed.skipWeeks
     ? uniq(
         parsed.skipWeeks
-          .map((wk) => normalizeWeekKey(wk))
+          .map((wk) => normalizeWeekKey(wk) || wk)
           .filter((wk): wk is string => Boolean(wk)),
       )
     : undefined;

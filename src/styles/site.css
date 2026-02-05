@@ -270,6 +270,12 @@ header {
   font-style: italic;
 }
 
+.week-chip.invalid {
+  border-color: #7c3232;
+  background: #1a0f12;
+  color: #f2b3b3;
+}
+
 /* --- Exit fullscreen button --- */
 
 .exit-btn {
@@ -376,6 +382,34 @@ main {
   min-width: 0;
   border: none;
   background: #0e1118;
+}
+
+.warning-banner {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 600;
+  background: #1a0f12cc;
+  border: 1px solid #7c3232;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f2b3b3;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 8px 18px -12px #000000cc;
+  backdrop-filter: blur(4px);
+}
+
+.warning-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.warning-body {
+  display: grid;
+  gap: 2px;
 }
 
 #messageOverlay {

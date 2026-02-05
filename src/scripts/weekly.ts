@@ -6,6 +6,7 @@ type WeeklyPageData = {
   weekKeyParam: string;
   slideId: string | null;
   isSkipWeek: boolean;
+  classOrder: string[];
 };
 
 declare global {
@@ -16,6 +17,7 @@ declare global {
       weekKeyParam: string;
       slideId: string | null;
       isSkipWeek: boolean;
+      classOrder: string[];
     };
   }
 }
@@ -29,8 +31,21 @@ function readData(): WeeklyPageData | null {
   const weekKeyParam = el.getAttribute('data-week-key-param');
   const slideId = el.getAttribute('data-slide-id');
   const isSkipWeek = el.getAttribute('data-is-skip-week') === 'true';
+  const classOrderRaw = el.getAttribute('data-class-order');
 
   if (!classId || !weekKey || !weekKeyParam) return null;
+
+  let classOrder: string[] = [];
+  if (classOrderRaw) {
+    try {
+      const parsed = JSON.parse(classOrderRaw);
+      if (Array.isArray(parsed)) {
+        classOrder = parsed.filter((v) => typeof v === 'string');
+      }
+    } catch {
+      classOrder = [];
+    }
+  }
 
   return {
     classId,
@@ -38,6 +53,7 @@ function readData(): WeeklyPageData | null {
     weekKeyParam,
     slideId: slideId || null,
     isSkipWeek,
+    classOrder,
   };
 }
 
@@ -56,14 +72,7 @@ const weekSelect = $('weekSelect') as HTMLSelectElement | null;
 const toggleFullBtn = $('toggleFullBtn') as HTMLButtonElement | null;
 const exitFullscreenBtn = $('exitFullscreenBtn') as HTMLButtonElement | null;
 
-const CLASS_ORDER = [
-  'cs-1-pathway',
-  'cs-2',
-  'cs-3',
-  'cs-4',
-  'mythology',
-  'cs-1-semester',
-];
+const classOrder = data?.classOrder || [];
 
 function ensureWeekVisible() {
   const container = document.querySelector('.week-nav') as HTMLElement | null;
@@ -187,9 +196,9 @@ function handleFullscreenKeys(e: KeyboardEvent) {
 
   const key = e.key;
   const idx = parseInt(key, 10);
-  if (idx >= 1 && idx <= 6) {
+  if (idx >= 1 && idx <= classOrder.length) {
     e.preventDefault();
-    const classId = CLASS_ORDER[idx - 1];
+    const classId = classOrder[idx - 1];
     if (classId) {
       // Include fullscreen param to stay in fullscreen mode on new page
       const url = new URL(window.location.origin + `/class/${classId}/`);

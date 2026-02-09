@@ -226,9 +226,8 @@ const overlayMessage = !cls
       <div class="fullscreen-class-switch">
         {agendasConfig.classes.map((cls, idx) => (
           <a
-            href={`/class/${cls.id}/`}
+            href={`/class/${cls.id}/?fullscreen=true`}
             title={`${idx + 1} - ${cls.name}`}
-            onclick={`sessionStorage.setItem('wantFullscreen', 'true');`}
           >
             {idx + 1}
           </a>

@@ -276,6 +276,10 @@ header {
   color: #f2b3b3;
 }
 
+.week-chip.future-hidden {
+  display: none;
+}
+
 /* --- Exit fullscreen button --- */
 
 .exit-btn {

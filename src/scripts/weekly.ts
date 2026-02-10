@@ -1,4 +1,5 @@
 import { slideEmbedUrl, slideOpenUrl } from '../lib/slides';
+import { isoWeekKey } from '../lib/week';
 
 type WeeklyPageData = {
   classId: string;
@@ -74,6 +75,20 @@ const exitFullscreenBtn = $('exitFullscreenBtn') as HTMLButtonElement | null;
 
 const classOrder = data?.classOrder || [];
 
+function syncCurrentWeekChip() {
+  const weekKey = isoWeekKey(new Date());
+  for (const el of document.querySelectorAll('.week-chip.current')) {
+    el.classList.remove('current');
+  }
+
+  const escapedWeekKey =
+    typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+      ? CSS.escape(weekKey)
+      : weekKey;
+  const currentChip = document.querySelector(`.week-chip[data-week="${escapedWeekKey}"]`);
+  currentChip?.classList.add('current');
+}
+
 function ensureWeekVisible() {
   const container = document.querySelector('.week-nav') as HTMLElement | null;
   const active = document.querySelector('.week-chip.active') as HTMLElement | null;
@@ -90,6 +105,7 @@ function ensureWeekVisible() {
 }
 
 requestAnimationFrame(() => {
+  syncCurrentWeekChip();
   ensureWeekVisible();
 });
 

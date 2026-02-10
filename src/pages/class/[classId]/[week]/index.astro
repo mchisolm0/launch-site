@@ -10,7 +10,6 @@ import {
 import {
   formatDateRange,
   getWeekRange,
-  isoWeekKey,
   normalizeWeekKey,
   parseWeekKey,
   validateWeekKey,
@@ -86,8 +85,6 @@ const activeLabel = !weekKey
         ? `Week ${aw}`
         : `Week: ${weekKey}`;
 
-const currentWeekKey = isoWeekKey(new Date());
-
 const overlayMessage = !cls
   ? 'Class not found.'
   : !weekKey
@@ -124,7 +121,6 @@ const overlayMessage = !cls
       <nav class="week-nav" aria-label="Week navigation">
         <div class="week-scroll">
           {weeks.map((wk) => {
-            const isCurrent = wk === currentWeekKey;
             const isActive = wk === weekKey;
             const wkValidation = validateWeekKey(wk);
             const invalidTitle = !wkValidation.valid
@@ -138,12 +134,12 @@ const overlayMessage = !cls
             const isBreakWk = !isInvalidWk && isSkipWeek(meta, wk);
             const n = academicWeekNumber(meta, wk);
 
-            const className = `week-chip${isCurrent ? ' current' : ''}${isActive ? ' active' : ''}${
+            const className = `week-chip${isActive ? ' active' : ''}${
               isBreakWk ? ' break' : ''
             }${isInvalidWk ? ' invalid' : ''}`;
 
             return (
-              <a class={className} href={`/class/${classId}/${wk}/`} title={invalidTitle}>
+              <a class={className} href={`/class/${classId}/${wk}/`} title={invalidTitle} data-week={wk}>
                 {isBreakWk ? 'Break' : n ? `W${n}` : wk}
               </a>
             );

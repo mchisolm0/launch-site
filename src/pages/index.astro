@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { agendasConfig } from '../lib/agendas';
+
+const classes = agendasConfig.classes;
+---
+
+<BaseLayout title="Launch Slides">
+  <header>
+    <div class="topbar">
+      <div class="tag">Daily Slides</div>
+      <div class="spacer"></div>
+      <a class="btn-inline" href="/" aria-current="page">Home</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="landing">
+      <h1 style="margin: 0 0 14px; font-size: 18px">Choose your class</h1>
+      <div class="class-grid">
+        {classes.map((c) => (
+          <a class="class-card" href={`/class/${c.id}/`}>
+            <h2>{c.name}</h2>
+            <p>Opens the current week’s slideshow.</p>
+            <span class="tag small">/class/{c.id}/</span>
+          </a>
+        ))}
+      </div>
+
+      <div style="margin-top: 18px; color: var(--muted); font-size: 13px; line-height: 1.4">
+        Tip: once you’re on a slideshow page, use <strong>Copy Link</strong> to share a direct
+        <code>/class/&lt;id&gt;/&lt;week&gt;/</code> URL.
+      </div>
+    </section>
+  </main>
+
+  <footer style="padding: 0 16px 24px; color: var(--muted); font-size: 12px">
+    Data lives in <code>data/agendas.json</code>.
+  </footer>
+</BaseLayout>

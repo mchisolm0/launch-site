@@ -1,1 +1,13 @@
 .aider*
+
+# Node / Astro
+node_modules/
+dist/
+.astro/
+
+# Vercel
+.vercel/output
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*

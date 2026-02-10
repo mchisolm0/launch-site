@@ -53,6 +53,16 @@ const exitFullscreenBtn = $('exitFullscreenBtn');
 
 const classOrder = data?.classOrder || [];
 
+function hideFutureWeekChips() {
+  const todayWeekKey = isoWeekKey(new Date());
+  for (const el of document.querySelectorAll('.week-chip[data-week]')) {
+    const weekKey = el.getAttribute('data-week');
+    const isActive = el.classList.contains('active');
+    const isFuture = Boolean(weekKey && weekKey.localeCompare(todayWeekKey) > 0);
+    el.classList.toggle('future-hidden', isFuture && !isActive);
+  }
+}
+
 function syncCurrentWeekChip() {
   const weekKey = isoWeekKey(new Date());
   for (const el of document.querySelectorAll('.week-chip.current')) {
@@ -83,6 +93,7 @@ function ensureWeekVisible() {
 }
 
 requestAnimationFrame(() => {
+  hideFutureWeekChips();
   syncCurrentWeekChip();
   ensureWeekVisible();
 });

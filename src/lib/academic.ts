@@ -1,4 +1,4 @@
-import { formatDateRange, getWeekRange } from './week';
+import { formatDateRange, getWeekRange, isoWeekKey } from './week';
 import type { AgendasConfig, AgendasClass } from './agendas';
 
 export type AcademicMeta = {
@@ -8,20 +8,18 @@ export type AcademicMeta = {
   skipMondays: Date[];
 };
 
-function sortedWeeks(weeksMap: Record<string, string>): string[] {
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+function sortedSchoolWeeks(weeksMap: Record<string, string>): number[] {
   return Object.keys(weeksMap || {})
     .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b));
+    .map((w) => Number(w))
+    .filter((n) => Number.isInteger(n) && n >= 1)
+    .sort((a, b) => a - b);
 }
 
 export function deriveEarliestWeek(config: AgendasConfig): string | null {
-  const all = new Set<string>();
-  for (const cls of config.classes) {
-    for (const wk of Object.keys(cls.weeks || {})) all.add(wk);
-  }
-  for (const sw of config.skipWeeks || []) all.add(sw);
-
-  const sorted = [...all].filter(Boolean).sort((a, b) => a.localeCompare(b));
+  const sorted = [...(config.skipWeeks || [])].filter(Boolean).sort((a, b) => a.localeCompare(b));
   return sorted[0] || null;
 }
 
@@ -59,7 +57,7 @@ export function academicWeekNumber(meta: AcademicMeta, weekKey: string): number 
   if (isSkipWeek(meta, weekKey)) return null;
 
   const diffWeeks = Math.round(
-    (wkMon.getTime() - meta.startMonday.getTime()) / (7 * 24 * 60 * 60 * 1000),
+    (wkMon.getTime() - meta.startMonday.getTime()) / WEEK_MS,
   );
 
   let skipsUpTo = 0;
@@ -82,9 +80,60 @@ export function displayWeekLabel(meta: AcademicMeta, weekKey: string): string {
 }
 
 export function mergedWeeks(meta: AcademicMeta, cls: AgendasClass): string[] {
-  const set = new Set(sortedWeeks(cls.weeks));
-  for (const sw of meta.skipSet) set.add(sw);
+  const entries = classWeekEntries(meta, cls);
+  const set = new Set(entries.map((e) => e.weekKey));
+  if (!entries.length) return [];
+
+  const first = getWeekRange(entries[0].weekKey);
+  const last = getWeekRange(entries[entries.length - 1].weekKey);
+  if (!first || !last) return [...set].sort((a, b) => a.localeCompare(b));
+
+  for (const sw of meta.skipSet) {
+    const range = getWeekRange(sw);
+    if (!range) continue;
+    if (range.start.getTime() >= first.start.getTime() && range.start.getTime() <= last.start.getTime()) {
+      set.add(sw);
+    }
+  }
+
   return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+export function weekKeyFromSchoolWeek(meta: AcademicMeta, schoolWeek: number): string | null {
+  if (!meta.startMonday || schoolWeek < 1) return null;
+
+  let seen = 0;
+  let cursor = new Date(meta.startMonday);
+
+  // Hard-stop to prevent runaway loops if config is malformed.
+  for (let i = 0; i < 200; i++) {
+    const wk = isoWeekKey(cursor);
+    if (!meta.skipSet.has(wk)) {
+      seen += 1;
+      if (seen === schoolWeek) return wk;
+    }
+    cursor = new Date(cursor.getTime() + WEEK_MS);
+  }
+  return null;
+}
+
+export function classWeekEntries(
+  meta: AcademicMeta,
+  cls: AgendasClass,
+): { schoolWeek: number; weekKey: string; slideId: string | null }[] {
+  const entries: { schoolWeek: number; weekKey: string; slideId: string | null }[] = [];
+  for (const schoolWeek of sortedSchoolWeeks(cls.weeks)) {
+    const weekKey = weekKeyFromSchoolWeek(meta, schoolWeek);
+    if (!weekKey) continue;
+    entries.push({ schoolWeek, weekKey, slideId: cls.weeks[String(schoolWeek)] || null });
+  }
+  return entries;
+}
+
+export function slideIdForWeekKey(meta: AcademicMeta, cls: AgendasClass, weekKey: string): string | null {
+  const schoolWeek = academicWeekNumber(meta, weekKey);
+  if (!schoolWeek) return null;
+  return cls.weeks[String(schoolWeek)] || null;
 }
 
 export function mostRecentWeekAtOrBefore(weeksAsc: string[], targetWeekKey: string): string | null {

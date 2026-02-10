@@ -3,9 +3,11 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import { agendasConfig, getClassById } from '../../../../lib/agendas';
 import {
   academicWeekNumber,
+  classWeekEntries,
   initAcademicMeta,
   isSkipWeek,
   mergedWeeks,
+  slideIdForWeekKey,
 } from '../../../../lib/academic';
 import {
   formatDateRange,
@@ -55,6 +57,9 @@ const cls = classId ? getClassById(agendasConfig, classId) : null;
 const weekKey = weekParam ? normalizeWeekKey(weekParam) || weekParam : null;
 
 const weeks = cls ? mergedWeeks(meta, cls) : [];
+const schoolWeekByIso = cls
+  ? new Map(classWeekEntries(meta, cls).map((w) => [w.weekKey, w.schoolWeek]))
+  : new Map<string, number>();
 const validation = weekKey ? validateWeekKey(weekKey) : null;
 const isInvalid = validation ? !validation.valid : false;
 const invalidReason =
@@ -68,7 +73,7 @@ const invalidReason =
 
 const isBreak = weekKey ? !isInvalid && isSkipWeek(meta, weekKey) : false;
 
-const slideId = cls && weekKey && !isBreak ? cls.weeks[weekKey] || null : null;
+const slideId = cls && weekKey && !isBreak ? slideIdForWeekKey(meta, cls, weekKey) : null;
 
 const range = weekKey ? getWeekRange(weekKey) : null;
 const dateRange = range ? formatDateRange(range.start, range.end) : '—';
@@ -131,7 +136,7 @@ const overlayMessage = !cls
               : undefined;
             const isInvalidWk = !wkValidation.valid;
             const isBreakWk = !isInvalidWk && isSkipWeek(meta, wk);
-            const n = academicWeekNumber(meta, wk);
+            const n = schoolWeekByIso.get(wk) || academicWeekNumber(meta, wk);
 
             const className = `week-chip${isActive ? ' active' : ''}${
               isBreakWk ? ' break' : ''

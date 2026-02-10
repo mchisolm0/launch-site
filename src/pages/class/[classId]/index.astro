@@ -2,8 +2,6 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { agendasConfig, getClassById } from '../../../lib/agendas';
 
-import redirectScriptUrl from '../../../scripts/redirect.ts?url';
-
 export function getStaticPaths() {
   return agendasConfig.classes.map((cls) => ({
     params: { classId: cls.id },
@@ -38,5 +36,7 @@ const weeksAsc = cls
   </main>
 
 <div id="redirect-data" data-class-id={classId} data-weeks-asc={JSON.stringify(weeksAsc)}></div>
-  <script type="module" src={redirectScriptUrl}></script>
+  <script>
+    import '../../../scripts/redirect.js';
+  </script>
 </BaseLayout>

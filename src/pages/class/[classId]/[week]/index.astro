@@ -15,7 +15,6 @@ import {
   validateWeekKey,
 } from '../../../../lib/week';
 
-import weeklyScriptUrl from '../../../../scripts/weekly.ts?url';
 
 interface Window {
   weeklyData?: {
@@ -247,5 +246,7 @@ const overlayMessage = !cls
   data-is-skip-week={isBreak ? 'true' : 'false'}
   data-class-order={JSON.stringify(agendasConfig.classes.map((c) => c.id))}
 ></div>
-  <script type="module" src={weeklyScriptUrl}></script>
+  <script>
+    import '../../../../scripts/weekly.js';
+  </script>
 </BaseLayout>

@@ -1,12 +1,7 @@
 import { isoWeekKey } from '../lib/week';
 import { mostRecentWeekAtOrBefore } from '../lib/academic';
 
-type RedirectData = {
-  classId: string;
-  weeksAsc: string[];
-};
-
-function readData(): RedirectData | null {
+function readData() {
   const el = document.getElementById('redirect-data');
   if (!el) return null;
 

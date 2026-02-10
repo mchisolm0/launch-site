@@ -1,29 +1,7 @@
 import { slideEmbedUrl, slideOpenUrl } from '../lib/slides';
 import { isoWeekKey } from '../lib/week';
 
-type WeeklyPageData = {
-  classId: string;
-  weekKey: string;
-  weekKeyParam: string;
-  slideId: string | null;
-  isSkipWeek: boolean;
-  classOrder: string[];
-};
-
-declare global {
-  interface Window {
-    weeklyData?: {
-      classId: string;
-      weekKey: string;
-      weekKeyParam: string;
-      slideId: string | null;
-      isSkipWeek: boolean;
-      classOrder: string[];
-    };
-  }
-}
-
-function readData(): WeeklyPageData | null {
+function readData() {
   const el = document.getElementById('weekly-data');
   if (!el) return null;
 
@@ -36,7 +14,7 @@ function readData(): WeeklyPageData | null {
 
   if (!classId || !weekKey || !weekKeyParam) return null;
 
-  let classOrder: string[] = [];
+  let classOrder = [];
   if (classOrderRaw) {
     try {
       const parsed = JSON.parse(classOrderRaw);
@@ -58,20 +36,20 @@ function readData(): WeeklyPageData | null {
   };
 }
 
-function $(id: string): HTMLElement | null {
+function $(id) {
   return document.getElementById(id);
 }
 
 const data = readData();
 
-const overlay = $('messageOverlay') as HTMLDivElement | null;
-const slidesFrame = $('slidesFrame') as HTMLIFrameElement | null;
-const openInNewTab = $('openInNewTab') as HTMLAnchorElement | null;
-const copyLinkBtn = $('copyLinkBtn') as HTMLButtonElement | null;
-const classSelect = $('classSelect') as HTMLSelectElement | null;
-const weekSelect = $('weekSelect') as HTMLSelectElement | null;
-const toggleFullBtn = $('toggleFullBtn') as HTMLButtonElement | null;
-const exitFullscreenBtn = $('exitFullscreenBtn') as HTMLButtonElement | null;
+const overlay = $('messageOverlay');
+const slidesFrame = $('slidesFrame');
+const openInNewTab = $('openInNewTab');
+const copyLinkBtn = $('copyLinkBtn');
+const classSelect = $('classSelect');
+const weekSelect = $('weekSelect');
+const toggleFullBtn = $('toggleFullBtn');
+const exitFullscreenBtn = $('exitFullscreenBtn');
 
 const classOrder = data?.classOrder || [];
 
@@ -90,8 +68,8 @@ function syncCurrentWeekChip() {
 }
 
 function ensureWeekVisible() {
-  const container = document.querySelector('.week-nav') as HTMLElement | null;
-  const active = document.querySelector('.week-chip.active') as HTMLElement | null;
+  const container = document.querySelector('.week-nav');
+  const active = document.querySelector('.week-chip.active');
   if (!container || !active) return;
 
   const cRect = container.getBoundingClientRect();
@@ -152,15 +130,15 @@ copyLinkBtn?.addEventListener('click', async () => {
     copyLinkBtn.innerHTML = '✓';
     copyLinkBtn.setAttribute('title', 'Copied!');
     window.setTimeout(() => {
-      copyLinkBtn!.innerHTML = oldContent;
-      if (oldTitle) copyLinkBtn!.setAttribute('title', oldTitle);
+      copyLinkBtn.innerHTML = oldContent;
+      if (oldTitle) copyLinkBtn.setAttribute('title', oldTitle);
     }, 1200);
   } catch {
     // Clipboard may be blocked; no-op.
   }
 });
 
-function setFullscreen(on: boolean) {
+function setFullscreen(on) {
   document.body.classList.toggle('slides-full', on);
   toggleFullBtn?.setAttribute('aria-pressed', on ? 'true' : 'false');
   if (exitFullscreenBtn) exitFullscreenBtn.style.display = on ? 'inline-flex' : 'none';
@@ -178,10 +156,10 @@ function setFullscreen(on: boolean) {
 }
 
 // Check URL for fullscreen param on load
-if (sessionStorage.getItem("wantFullscreen") === "true") {
-  sessionStorage.removeItem("wantFullscreen");
+if (sessionStorage.getItem('wantFullscreen') === 'true') {
+  sessionStorage.removeItem('wantFullscreen');
   setFullscreen(true);
-} else if (new URLSearchParams(window.location.search).get("fullscreen") === "true") {
+} else if (new URLSearchParams(window.location.search).get('fullscreen') === 'true') {
   setFullscreen(true);
 }
 
@@ -192,7 +170,7 @@ toggleFullBtn?.addEventListener('click', () => {
 
 exitFullscreenBtn?.addEventListener('click', () => setFullscreen(false));
 
-function handleFullscreenKeys(e: KeyboardEvent) {
+function handleFullscreenKeys(e) {
   if (!document.body.classList.contains('slides-full')) return;
   if (e.key === 'Escape') {
     e.preventDefault();
@@ -200,7 +178,7 @@ function handleFullscreenKeys(e: KeyboardEvent) {
     return;
   }
 
-  const target = e.target as HTMLElement;
+  const target = e.target;
   if (
     target.tagName === 'INPUT' ||
     target.tagName === 'TEXTAREA' ||
@@ -225,5 +203,5 @@ function handleFullscreenKeys(e: KeyboardEvent) {
 }
 
 // Use both window and document capture for iframe keyboard events
-window.addEventListener("keydown", handleFullscreenKeys, true);
-document.addEventListener("keydown", handleFullscreenKeys, true);
+window.addEventListener('keydown', handleFullscreenKeys, true);
+document.addEventListener('keydown', handleFullscreenKeys, true);

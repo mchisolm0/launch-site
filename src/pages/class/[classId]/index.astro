@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { agendasConfig, getClassById } from '../../../lib/agendas';
+import { classWeekEntries, initAcademicMeta } from '../../../lib/academic';
 
 export function getStaticPaths() {
   return agendasConfig.classes.map((cls) => ({
@@ -10,10 +11,12 @@ export function getStaticPaths() {
 
 const { classId } = Astro.params;
 const cls = classId ? getClassById(agendasConfig, classId) : null;
+const meta = initAcademicMeta(agendasConfig);
 
 const weeksAsc = cls
-  ? Object.keys(cls.weeks)
-      .filter((wk) => Boolean(cls.weeks[wk]))
+  ? classWeekEntries(meta, cls)
+      .filter((w) => Boolean(w.slideId))
+      .map((w) => w.weekKey)
       .sort((a, b) => a.localeCompare(b))
   : [];
 ---
